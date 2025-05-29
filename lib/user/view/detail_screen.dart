@@ -1,63 +1,103 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindit/common/component/Box_component.dart';
 import 'package:mindit/common/data/color.dart';
+import 'package:mindit/common/util/data_util.dart';
+import 'package:mindit/task/model/param_model.dart';
+import 'package:mindit/task/model/task_state_model.dart';
+import 'package:mindit/task/provider/task_model_provider.dart';
 
-class DetailScreen extends StatelessWidget {
-  const DetailScreen({super.key});
+import '../../common/component/detail_task_card.dart';
+import '../../task/model/task_model.dart';
+
+class DetailScreen extends ConsumerStatefulWidget {
+  final TabController superTabController;
+  const DetailScreen({super.key, required this.superTabController});
+
+  @override
+  ConsumerState<DetailScreen> createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends ConsumerState<DetailScreen>
+    with SingleTickerProviderStateMixin {
+  late List<TaskModel> DBdata = [];
+  late ScrollController controller;
+  bool isLoading = false;
+  int start_id = 0;
+  int end_id = 20;
+  int id_increase = 20;
+  bool isEnd = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    LoadingData();
+    controller = ScrollController();
+    controller.addListener(ControllerListener);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    controller.removeListener(ControllerListener);
+
+    controller.dispose();
+  }
+
+  ControllerListener() {
+    if (!isLoading &&
+        controller.offset > controller.position.maxScrollExtent - 10) {
+      LoadingData();
+    }
+  }
+
+  LoadingData() async {
+    isLoading = true;
+    final addData = await ref.read(
+      TaskModelCursorProvider(
+        TaskModel_Praram(start_id: this.start_id, end_id: this.end_id),
+      ),
+    );
+    if (addData.isNotEmpty) {
+      DBdata.addAll(addData);
+      start_id += id_increase;
+      end_id += id_increase;
+    } else {
+      isEnd = true;
+    }
+    setState(() {});
+    isLoading = false;
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (DBdata == null) {
+      return CircularProgressIndicator();
+    }
     return ListView.separated(
-      itemCount: 10,
+      controller: controller,
+      itemCount: DBdata.length + 1,
       itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {},
-          child: BoxComponent(
-            child: Column(
-              children: [
-                title('무여', '월 . 화 . 수 . 목 . 금'),
-                body('연속 4일 달성 - 실천율: 40%'),
-              ],
-            ),
-            height: 105,
-            boxDecoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.white, PASTEL_COLORS[7]],
-                stops: [0.3, 1.0],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+        if (index + 1 == DBdata.length + 1) {
+          if (isEnd) {
+            return GestureDetector(
+              onTap: () {
+                widget.superTabController.animateTo(2);
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: BoxComponent(height: 50, child: Icon(Icons.add)),
               ),
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: Colors.black54, width: 2),
-            ),
-          ),
-        );
+            );
+          }
+          return Center(child: CircularProgressIndicator(color: Colors.black));
+        }
+        return DetailTaskCard(DBdata: DBdata[index]);
       },
       separatorBuilder: (context, index) {
         return SizedBox(height: 8);
       },
-    );
-  }
-
-  title(String text, String weekofDay) {
-    return Row(
-      children: [
-        Text(text, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 30)),
-        SizedBox(width: 10),
-        Text(
-          weekofDay,
-          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
-        ),
-      ],
-    );
-  }
-
-  body(String text) {
-    return Row(
-      children: [
-        Text(text, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24)),
-      ],
     );
   }
 }

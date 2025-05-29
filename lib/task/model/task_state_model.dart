@@ -1,6 +1,6 @@
 import 'package:mindit/task/model/task_model.dart';
 
 class TaskStateModel {
-  Map<String, TaskModel> TaskModels = {};
+  List<TaskModel> TaskModels = [];
   TaskStateModel();
 }

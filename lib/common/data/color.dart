@@ -25,3 +25,15 @@ final List<Color> PASTEL_COLORS = [
   Color(pastelBlackHex),
   Color(pastelGrayHex),
 ];
+
+final List<int> PASTEL_COLORS_INT = [
+  pastelRedHex,
+  pastelOrangeHex,
+  pastelYellowHex,
+  pastelGreenHex,
+  pastelBlueHex,
+  pastelIndigoHex,
+  pastelPurpleHex,
+  pastelBlackHex,
+  pastelGrayHex,
+];

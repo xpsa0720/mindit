@@ -10,28 +10,31 @@ part 'task_model.g.dart';
 
 @JsonSerializable()
 class TaskModel extends ModelBase {
-  int? id;
+  int id;
   final String title;
   final DayOfWeekModel dayOfWeekModel;
   final String descriptor;
   final String mainColor;
 
-  double implementationRate = 0;
-  int sequenceDay = 0;
+  double implementationRate;
+  int sequenceDay;
+  bool isAlarm;
 
   TaskModel({
-    this.id,
+    this.id = 0,
     required this.title,
     required this.dayOfWeekModel,
     required this.descriptor,
     required this.mainColor,
+    this.implementationRate = 0,
+    this.sequenceDay = 0,
+    this.isAlarm = false,
   });
 
   factory TaskModel.fromJson(Map<String, dynamic> json) =>
       _$TaskModelFromJson(json);
 
   factory TaskModel.fromMap(Map<String, dynamic> json) {
-    print('"123" ${json['mainColor']}');
     return TaskModel(
       id: json['id'],
       title: json['title'],
@@ -40,6 +43,9 @@ class TaskModel extends ModelBase {
       ),
       descriptor: json['descriptor'],
       mainColor: json['mainColor'],
+      implementationRate: json['implementationRate'],
+      sequenceDay: json['sequenceDay'],
+      isAlarm: json['isAlarm'] == '1' ? true : false,
     );
   }
 
@@ -50,6 +56,9 @@ class TaskModel extends ModelBase {
       'dayOfWeekModel': DataUtils.dayOfWeekToJsonData(dayOfWeekModel),
       'descriptor': descriptor,
       'mainColor': mainColor.toString(),
+      'implementationRate': implementationRate.toString(),
+      'sequenceDay': sequenceDay.toString(),
+      'isAlarm': isAlarm ? '1' : '0',
     };
   }
 }

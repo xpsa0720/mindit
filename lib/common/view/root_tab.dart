@@ -62,7 +62,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         controller: tabBarController,
         children: [
           DashBoardScreen(),
-          DetailScreen(),
+          DetailScreen(superTabController: tabBarController),
           DataPlusScreen(),
           SettingScreen(),
         ],

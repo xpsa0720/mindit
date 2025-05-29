@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindit/common/component/Box_component.dart';
+import 'package:mindit/common/util/data_util.dart';
 import 'package:mindit/task/model/day_of_week_model.dart';
 import 'package:mindit/task/model/task_model.dart';
 
@@ -8,6 +9,7 @@ import '../../common/component/text_filed_component.dart';
 import '../../common/data/color.dart';
 import '../../common/data/sqlite.dart';
 import '../../sqlite/provider/db_provider.dart';
+import '../../task/util/dummy_data.dart';
 
 class DataPlusScreen extends ConsumerStatefulWidget {
   const DataPlusScreen({super.key});
@@ -18,7 +20,8 @@ class DataPlusScreen extends ConsumerStatefulWidget {
 
 class _DataPlusScreenState extends ConsumerState<DataPlusScreen> {
   List<String> DayOfWeek_list = ['월', '화', '수', '목', '금', '토', '일'];
-
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptorController = TextEditingController();
   List<bool> DayOfWeek_bool_list = List.generate(7, (index) => false);
   bool isenableYesButton = false;
   bool isenableNoButton = true;
@@ -34,7 +37,17 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen> {
               Row(children: [renderText('실천 내용')]),
               Padding(
                 padding: const EdgeInsets.only(top: 5, right: 20),
-                child: TextFiledComponent(),
+                child: TextFiledComponent(
+                  textEditingController: titleController,
+                ),
+              ),
+              SizedBox(height: 32),
+              Row(children: [renderText('실천 설명')]),
+              Padding(
+                padding: const EdgeInsets.only(top: 5, right: 20),
+                child: TextFiledComponent(
+                  textEditingController: descriptorController,
+                ),
               ),
               SizedBox(height: 32),
               SelectDayWidget(),
@@ -44,13 +57,29 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen> {
               AleramWidget(),
               SizedBox(height: 32),
               ColorWidget(),
+              SizedBox(height: 16),
 
-              CreateButton(text: '생성', callback: () {}),
+              CreateButton(text: '생성', callback: CreateTaskModel),
             ],
           ),
           width: double.infinity,
         ),
       ],
+    );
+  }
+
+  CreateTaskModel() {
+    final state = ref.watch(dbHelperProvider);
+    state.InsertTaskModel(
+      model: TaskModel(
+        title: titleController.text,
+        dayOfWeekModel: DayOfWeekModel(
+          dayOfWeek: DataUtils.generateDayOfWeekList(DayOfWeek_bool_list),
+        ),
+        descriptor: descriptorController.text,
+        mainColor: PASTEL_COLORS_INT[seletedColor].toString(),
+      ),
+      table: TABLE_NAME,
     );
   }
 
