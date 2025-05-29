@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mindit/task/provider/task_model_provider.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -14,8 +15,8 @@ final dbHelperProvider = Provider<DbHelper>((ref) {
     throw Error();
   }
   final cp = db as db_model;
-
-  return DbHelper(db: cp.db);
+  final dbHelper = DbHelper(db: cp.db);
+  return dbHelper;
 });
 
 final dbProvider = StateNotifierProvider<dbStateNotifier, ModelBase>((ref) {

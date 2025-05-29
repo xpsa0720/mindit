@@ -5,6 +5,7 @@ import 'package:mindit/task/model/day_of_week_model.dart';
 import 'package:mindit/task/model/task_model.dart';
 
 import '../../common/component/text_filed_component.dart';
+import '../../common/data/color.dart';
 import '../../common/data/sqlite.dart';
 import '../../sqlite/provider/db_provider.dart';
 
@@ -17,10 +18,13 @@ class DataPlusScreen extends ConsumerStatefulWidget {
 
 class _DataPlusScreenState extends ConsumerState<DataPlusScreen> {
   List<String> DayOfWeek_list = ['월', '화', '수', '목', '금', '토', '일'];
+
   List<bool> DayOfWeek_bool_list = List.generate(7, (index) => false);
+  bool isenableYesButton = false;
+  bool isenableNoButton = true;
+  int seletedColor = 0;
   @override
   Widget build(BuildContext context) {
-    final dbHelper = ref.watch(dbHelperProvider);
     return Column(
       children: [
         BoxComponent(
@@ -32,55 +36,122 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen> {
                 padding: const EdgeInsets.only(top: 5, right: 20),
                 child: TextFiledComponent(),
               ),
-              SizedBox(height: 16),
-              Row(
-                children: [
-                  renderText('활동 날짜'),
-                  renderButton(
-                    text: '매일',
-                    callback: () {
-                      setState(() {
-                        everyDayEnable();
-                      });
-                    },
-                  ),
-                  renderButton(
-                    text: '평일',
-                    callback: () {
-                      setState(() {
-                        weekDayEnable();
-                      });
-                    },
-                  ),
-                  renderButton(
-                    text: '주말',
-                    callback: () {
-                      setState(() {
-                        dayofWeekEnable();
-                      });
-                    },
-                  ),
-                ],
-              ),
-              Row(
-                children: List.generate(7, (index) {
-                  return renderDayOfWeek(
-                    isEnable: DayOfWeek_bool_list[index],
-                    text: DayOfWeek_list[index],
-                    callback: () {
-                      setState(() {
-                        DayOfWeek_bool_list[index] =
-                            !DayOfWeek_bool_list[index];
-                      });
-                    },
-                  );
-                }),
-              ),
+              SizedBox(height: 32),
+              SelectDayWidget(),
+              SelectWeekDayWidget(),
+
+              SizedBox(height: 38),
+              AleramWidget(),
+              SizedBox(height: 32),
+              ColorWidget(),
+
+              CreateButton(text: '생성', callback: () {}),
             ],
           ),
           width: double.infinity,
         ),
       ],
+    );
+  }
+
+  ColorWidget() {
+    return Column(
+      children: [
+        Row(children: [renderText('메인 색상')]),
+        SizedBox(height: 8),
+        Row(
+          children: List.generate(PASTEL_COLORS.length, (index) {
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  seletedColor = index;
+                });
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                color: PASTEL_COLORS[index],
+                child: seletedColor == index ? Icon(Icons.check) : null,
+              ),
+            );
+          }),
+        ),
+        SizedBox(height: 16),
+      ],
+    );
+  }
+
+  AleramWidget() {
+    return Row(
+      children: [
+        renderText('알림 허용'),
+        renderButton(
+          text: '예',
+          callback: () {
+            isenableYesButton = true;
+            isenableNoButton = false;
+            setState(() {});
+          },
+          enableColor: isenableYesButton,
+        ),
+        renderButton(
+          text: '아니오',
+          callback: () {
+            isenableYesButton = false;
+            isenableNoButton = true;
+            setState(() {});
+          },
+          enableColor: isenableNoButton,
+        ),
+      ],
+    );
+  }
+
+  SelectDayWidget() {
+    return Row(
+      children: [
+        renderText('활동 날짜'),
+        renderButton(
+          text: '매일',
+          callback: () {
+            setState(() {
+              everyDayEnable();
+            });
+          },
+        ),
+        renderButton(
+          text: '평일',
+          callback: () {
+            setState(() {
+              weekDayEnable();
+            });
+          },
+        ),
+        renderButton(
+          text: '주말',
+          callback: () {
+            setState(() {
+              dayofWeekEnable();
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  SelectWeekDayWidget() {
+    return Row(
+      children: List.generate(7, (index) {
+        return renderDayOfWeek(
+          isEnable: DayOfWeek_bool_list[index],
+          text: DayOfWeek_list[index],
+          callback: () {
+            setState(() {
+              DayOfWeek_bool_list[index] = !DayOfWeek_bool_list[index];
+            });
+          },
+        );
+      }),
     );
   }
 
@@ -91,7 +162,11 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen> {
     );
   }
 
-  Widget renderButton({required String text, required VoidCallback callback}) {
+  Widget renderButton({
+    required String text,
+    required VoidCallback callback,
+    bool? enableColor,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(left: 10.0),
       child: ElevatedButton(
@@ -111,7 +186,11 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen> {
             return Size(60, 35);
           }),
           backgroundColor: WidgetStateColor.resolveWith((states) {
-            return Colors.white;
+            return enableColor == null
+                ? Colors.white
+                : !enableColor
+                ? Colors.white
+                : Colors.black12;
           }),
           elevation: WidgetStateProperty.resolveWith((states) {
             return 0;
@@ -189,6 +268,41 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen> {
     return return_bool;
   }
 
+  CreateButton({required String text, required VoidCallback callback}) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 10.0),
+      child: ElevatedButton(
+        onPressed: callback,
+        child: Text(
+          text,
+          style: TextStyle(
+            fontWeight: FontWeight.w400,
+            fontSize: 30,
+            color: Colors.black,
+          ),
+        ),
+        style: ButtonStyle(
+          minimumSize: WidgetStateProperty.resolveWith((states) {
+            return Size(double.infinity, 50);
+          }),
+          padding: WidgetStateProperty.all(EdgeInsets.zero),
+          backgroundColor: WidgetStateColor.resolveWith((states) {
+            return Colors.white;
+          }),
+          elevation: WidgetStateProperty.resolveWith((states) {
+            return 0;
+          }),
+          side: WidgetStateProperty.resolveWith(
+            (states) => BorderSide(color: Colors.black, width: 1),
+          ),
+          overlayColor: WidgetStateColor.resolveWith(
+            (states) => Color(0xFFd1d1d1),
+          ),
+        ),
+      ),
+    );
+  }
+
   renderDayOfWeek({
     required String text,
     required VoidCallback callback,
@@ -240,12 +354,3 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen> {
     );
   }
 }
-
-// ElevatedButton.styleFrom(
-// padding: EdgeInsets.only(top: 1),
-//
-// backgroundColor: Colors.white,
-// elevation: 0,
-// disabledBackgroundColor: Colors.white,
-// side: BorderSide(color: Colors.black),
-// ),

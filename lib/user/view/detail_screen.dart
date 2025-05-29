@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mindit/common/component/Box_component.dart';
+import 'package:mindit/common/data/color.dart';
 
 class DetailScreen extends StatelessWidget {
   const DetailScreen({super.key});
@@ -21,7 +22,7 @@ class DetailScreen extends StatelessWidget {
             height: 105,
             boxDecoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.white, Colors.purple],
+                colors: [Colors.white, PASTEL_COLORS[7]],
                 stops: [0.3, 1.0],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
