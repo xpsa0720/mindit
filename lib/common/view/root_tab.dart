@@ -15,6 +15,7 @@ class RootTab extends StatefulWidget {
 
 class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
   late TabController tabBarController;
+  late ScrollController scrollController;
 
   List<String> tabBarList = ['대시보드', '상세', '추가', '설정'];
 
@@ -23,6 +24,15 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
     // TODO: implement initState
     super.initState();
     tabBarController = TabController(length: 4, vsync: this);
+    scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    tabBarController.dispose();
+    scrollController.dispose();
   }
 
   @override
@@ -62,7 +72,10 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         controller: tabBarController,
         children: [
           DashBoardScreen(),
-          DetailScreen(superTabController: tabBarController),
+          DetailScreen(
+            superTabController: tabBarController,
+            controller: scrollController,
+          ),
           DataPlusScreen(),
           SettingScreen(),
         ],

@@ -19,6 +19,7 @@ class DataUtils {
   }
 
   static String dayOfWeekToJsonData(DayOfWeekModel model) {
+    if (model.dayOfWeek.isEmpty) return "Mon;";
     String json_string = "";
     for (final v in model.dayOfWeek) {
       switch (v) {
@@ -68,6 +69,9 @@ class DataUtils {
           return_string.add(' · ');
       }
     });
+    if (return_string.length == 0) {
+      return [];
+    }
     return return_string.sublist(0, return_string.length - 1);
   }
 

@@ -39,8 +39,6 @@ final TaskModelCursorProvider =
           ).toList();
 
       if (model.isEmpty) {
-        print('페이지 네이션 실행');
-
         final new_models = await dbHelper.QueryCusorTaskModelById(
           end_id: praram.end_id,
           start_id: praram.start_id,
@@ -49,9 +47,9 @@ final TaskModelCursorProvider =
         for (final i in new_models) {
           TaskStateModel.TaskModels.add(i);
         }
-        final model = TaskStateModel.TaskModels.where(
-          (e) => e.id >= praram.start_id && e.id <= praram.end_id,
-        );
+
+        TaskStateModel.TaskModels.sort((a, b) => a.id.compareTo(b.id));
+
         return new_models;
       } else {
         return model;
