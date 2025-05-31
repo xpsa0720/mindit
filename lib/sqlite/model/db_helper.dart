@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 
 import '../../task/model/task_model.dart';
+import '../../task/model/task_state_model.dart';
 
 class DbHelper {
   final Database db;
@@ -28,7 +29,7 @@ class DbHelper {
     return TaskModel.fromMap(result.first);
   }
 
-  Future<List<TaskModel>> QueryCusorTaskModelById({
+  Future<TaskStateModel> QueryCusorTaskModelById({
     required String table,
     required int start_id,
     required int end_id,
@@ -48,13 +49,13 @@ class DbHelper {
       where: 'id >= ? AND id <= ?',
       whereArgs: [start_id, end_id],
     );
-    List<TaskModel> result_list = [];
+    final return_result = TaskStateModel();
 
     for (final i in result) {
-      result_list.add(TaskModel.fromMap(i));
+      return_result.TaskModels.add(TaskModel.fromMap(i));
     }
 
-    return result_list;
+    return return_result;
   }
 
   Future<List<TaskModel>> QueryAllTaskModelById({required String table}) async {

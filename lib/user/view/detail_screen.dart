@@ -57,19 +57,24 @@ class _DetailScreenState extends ConsumerState<DetailScreen>
 
   LoadingData() async {
     isLoading = true;
+    setState(() {});
     await Future.delayed(Duration(seconds: 2));
 
     final addData = await ref.read(
       TaskModelCursorProvider(
-        TaskModel_Praram(start_id: this.start_id, end_id: this.end_id),
+        TaskModel_Praram(
+          start_id: this.start_id,
+          end_id: this.end_id,
+          length: this.id_increase,
+        ),
       ),
     );
-    if (addData.isNotEmpty) {
+    if (addData.TaskModels.isNotEmpty) {
       start_id += id_increase;
       end_id += id_increase;
     }
-    setState(() {});
     isLoading = false;
+    setState(() {});
   }
 
   @override
@@ -77,25 +82,26 @@ class _DetailScreenState extends ConsumerState<DetailScreen>
     super.build(context);
 
     final DBdata = ref.watch(TaskStateModelProvider);
+    print(DBdata.TaskModels.length);
     return ListView.separated(
       controller: controller,
-      itemCount: DBdata.TaskModels.length + 1,
+      itemCount: DBdata.TaskModels.length,
       itemBuilder: (context, index) {
-        if (index == DBdata.TaskModels.length) {
+        if (index == DBdata.TaskModels.length - 1) {
           if (isLoading)
             return Center(
               child: CircularProgressIndicator(color: Colors.black),
             );
-
-          return GestureDetector(
-            onTap: () {
-              widget.superTabController.animateTo(2);
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 10.0),
-              child: BoxComponent(height: 50, child: Icon(Icons.add)),
-            ),
-          );
+          if (DBdata.TaskModels[index].id == -1)
+            return GestureDetector(
+              onTap: () {
+                widget.superTabController.animateTo(2);
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: BoxComponent(height: 50, child: Icon(Icons.add)),
+              ),
+            );
         }
         return DetailTaskCard(DBdata: DBdata.TaskModels[index]);
       },

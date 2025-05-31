@@ -58,3 +58,12 @@ List<TaskModel> generateDummyTasks() {
     );
   });
 }
+
+final dummyModel = TaskModel(
+  title: '',
+  dayOfWeekModel: DayOfWeekModel(dayOfWeek: []),
+  descriptor: '',
+  mainColor: '',
+  implementationRate: 0,
+  sequenceDay: 0,
+);

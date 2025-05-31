@@ -21,7 +21,7 @@ class TaskModel extends ModelBase {
   bool isAlarm;
 
   TaskModel({
-    this.id = 0,
+    this.id = -1,
     required this.title,
     required this.dayOfWeekModel,
     required this.descriptor,
