@@ -7,23 +7,23 @@ import '../../sqlite/provider/db_provider.dart';
 import '../model/param_model.dart';
 import '../model/task_model.dart';
 
-final TaskModelProvider = Provider.family<Future<TaskModel>, int>((
-  ref,
-  id,
-) async {
-  final dbHelper = ref.watch(dbHelperProvider);
-  final TaskStateModel = ref.watch(TaskStateModelProvider);
-  final model = TaskStateModel.TaskModels[id];
-  if (model == null) {
-    final new_model = await dbHelper.QueryTaskModelById(
-      id: id,
-      table: TABLE_NAME,
-    );
-    TaskStateModel.TaskModels[id] = new_model;
-    return new_model;
-  } else
-    return model;
-});
+// final TaskModelProvider = Provider.family<Future<TaskModel>, int>((
+//   ref,
+//   id,
+// ) async {
+//   final dbHelper = ref.watch(dbHelperProvider);
+//   final TaskStateModel = ref.watch(TaskStateModelProvider);
+//   final model = TaskStateModel.TaskModels[id];
+//   if (model == null) {
+//     final new_model = await dbHelper.QueryTaskModelById(
+//       id: id,
+//       table: TABLE_NAME,
+//     );
+//     TaskStateModel.TaskModels[id] = new_model;
+//     return new_model;
+//   } else
+//     return model;
+// });
 
 final TaskModelCursorProvider =
     Provider.family<Future<List<TaskModel>>, TaskModel_Praram>((
@@ -63,4 +63,17 @@ final TaskStateModelProvider =
 
 class TaskStateModelStateNotifier extends StateNotifier<TaskStateModel> {
   TaskStateModelStateNotifier() : super(TaskStateModel());
+
+  addTaskModelData(TaskModel model) {
+    state.TaskModels.add(model);
+    // List.generate(state.TaskModels.length, (index) {
+    //   print('${state.TaskModels[index].id}');
+    // });
+    state.TaskModels.sort((a, b) => a.id.compareTo(b.id));
+  }
+
+  addTaskModeslData(List<TaskModel> model) {
+    state.TaskModels.addAll(model);
+    state.TaskModels.sort((a, b) => a.id.compareTo(b.id));
+  }
 }

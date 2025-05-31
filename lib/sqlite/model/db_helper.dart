@@ -82,10 +82,17 @@ class DbHelper {
   }
 
   InsertTaskModel({required TaskModel model, required String table}) async {
-    db.insert(table, model.toMap());
+    await db.insert(table, model.toMap());
+    final result = await db.query(
+      table,
+      columns: ['id'],
+      orderBy: 'id DESC',
+      limit: 1,
+    );
+    return result.first['id'];
   }
 
   DeletetaskModelById({required String id, required String table}) async {
-    db.delete(table, where: 'id = ?', whereArgs: [id]);
+    await db.delete(table, where: 'id = ?', whereArgs: [id]);
   }
 }

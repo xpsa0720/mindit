@@ -4,6 +4,7 @@ import 'package:mindit/common/component/Box_component.dart';
 import 'package:mindit/common/util/data_util.dart';
 import 'package:mindit/task/model/day_of_week_model.dart';
 import 'package:mindit/task/model/task_model.dart';
+import 'package:mindit/task/provider/task_model_provider.dart';
 
 import '../../common/component/text_filed_component.dart';
 import '../../common/data/color.dart';
@@ -69,19 +70,19 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen> {
     );
   }
 
-  CreateTaskModel() {
+  CreateTaskModel() async {
     final state = ref.watch(dbHelperProvider);
-    state.InsertTaskModel(
-      model: TaskModel(
-        title: titleController.text,
-        dayOfWeekModel: DayOfWeekModel(
-          dayOfWeek: DataUtils.generateDayOfWeekList(DayOfWeek_bool_list),
-        ),
-        descriptor: descriptorController.text,
-        mainColor: PASTEL_COLORS_INT[seletedColor].toString(),
+    final model = TaskModel(
+      title: titleController.text,
+      dayOfWeekModel: DayOfWeekModel(
+        dayOfWeek: DataUtils.generateDayOfWeekList(DayOfWeek_bool_list),
       ),
-      table: TABLE_NAME,
+      descriptor: descriptorController.text,
+      mainColor: PASTEL_COLORS_INT[seletedColor].toString(),
     );
+    final id = await state.InsertTaskModel(model: model, table: TABLE_NAME);
+    model.id = id;
+    ref.watch(TaskStateModelProvider.notifier).addTaskModelData(model);
   }
 
   ColorWidget() {

@@ -12,22 +12,18 @@ import '../../task/model/task_model.dart';
 import '../provider/reroad_provider.dart';
 
 class DetailScreen extends ConsumerStatefulWidget {
-  final ScrollController controller;
-
   final TabController superTabController;
-  const DetailScreen({
-    super.key,
-    required this.superTabController,
-    required this.controller,
-  });
+  const DetailScreen({super.key, required this.superTabController});
 
   @override
   ConsumerState<DetailScreen> createState() => _DetailScreenState();
 }
 
 class _DetailScreenState extends ConsumerState<DetailScreen>
-    with SingleTickerProviderStateMixin {
-  List<TaskModel> DBdata = [];
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+  bool get wantKeepAlive => true;
+
+  late ScrollController controller;
   bool isLoading = false;
   int start_id = 0;
   int end_id = 20;
@@ -38,42 +34,54 @@ class _DetailScreenState extends ConsumerState<DetailScreen>
     // TODO: implement initState
     super.initState();
     LoadingData();
-    widget.controller.addListener(ControllerListener);
+    controller = ScrollController();
+    controller.addListener(ControllerListener);
+    print('initState()');
+    print('${start_id}');
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    controller.dispose();
+    controller.removeListener(ControllerListener);
   }
 
   ControllerListener() async {
     if (!isLoading &&
-        widget.controller.offset >
-            widget.controller.position.maxScrollExtent - 10) {
+        controller.offset > controller.position.maxScrollExtent - 300) {
       await LoadingData();
     }
   }
 
   LoadingData() async {
     isLoading = true;
+    await Future.delayed(Duration(seconds: 2));
+
     final addData = await ref.read(
       TaskModelCursorProvider(
         TaskModel_Praram(start_id: this.start_id, end_id: this.end_id),
       ),
     );
-
     if (addData.isNotEmpty) {
-      DBdata.addAll(addData);
       start_id += id_increase;
       end_id += id_increase;
     }
-
     setState(() {});
     isLoading = false;
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
+    final DBdata = ref.watch(TaskStateModelProvider);
     return ListView.separated(
-      controller: widget.controller,
-      itemCount: DBdata.length + 1,
+      controller: controller,
+      itemCount: DBdata.TaskModels.length + 1,
       itemBuilder: (context, index) {
-        if (index == DBdata.length) {
+        if (index == DBdata.TaskModels.length) {
           if (isLoading)
             return Center(
               child: CircularProgressIndicator(color: Colors.black),
@@ -89,7 +97,7 @@ class _DetailScreenState extends ConsumerState<DetailScreen>
             ),
           );
         }
-        return DetailTaskCard(DBdata: DBdata[index]);
+        return DetailTaskCard(DBdata: DBdata.TaskModels[index]);
       },
       separatorBuilder: (context, index) {
         return SizedBox(height: 8);
@@ -97,12 +105,3 @@ class _DetailScreenState extends ConsumerState<DetailScreen>
     );
   }
 }
-
-// final reloading = ref.read(reloadProvider);
-// if (reloading) {
-// DBdata = [];
-// start_id = 0;
-// end_id = 20;
-// ref.read(reloadProvider.notifier).reloading(false);
-// setState(() {});
-// }
