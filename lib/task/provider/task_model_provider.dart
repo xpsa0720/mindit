@@ -1,83 +1,80 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindit/common/data/sqlite.dart';
+import 'package:mindit/sqlite/model/db_helper.dart';
+import 'package:mindit/task/model/task_model.dart';
 import 'package:mindit/task/model/task_state_model.dart';
 
 import '../../sqlite/model/base_model.dart';
 import '../../sqlite/provider/db_provider.dart';
-import '../model/param_model.dart';
-import '../model/task_model.dart';
-import '../util/dummy_data.dart';
 
-// final TaskModelProvider = Provider.family<Future<TaskModel>, int>((
-//   ref,
-//   id,
-// ) async {
-//   final dbHelper = ref.watch(dbHelperProvider);
-//   final TaskStateModel = ref.watch(TaskStateModelProvider);
-//   final model = TaskStateModel.TaskModels[id];
-//   if (model == null) {
-//     final new_model = await dbHelper.QueryTaskModelById(
-//       id: id,
-//       table: TABLE_NAME,
-//     );
-//     TaskStateModel.TaskModels[id] = new_model;
-//     return new_model;
-//   } else
-//     return model;
-// });
-
-final TaskModelCursorProvider =
-    Provider.family<Future<TaskStateModel>, TaskModel_Praram>((
-      ref,
-      praram,
-    ) async {
-      final dbHelper = ref.watch(dbHelperProvider);
-      final StateModel = ref.watch(TaskStateModelProvider);
-
-      final model_data =
-          StateModel.TaskModels.where(
-            (e) => e.id >= praram.start_id && e.id <= praram.end_id,
-          ).toList();
-
-      if (model_data.isEmpty) {
-        final new_models = await dbHelper.QueryCusorTaskModelById(
-          end_id: praram.end_id,
-          start_id: praram.start_id,
-          table: TABLE_NAME,
-        );
-
-        StateModel.TaskModels.addAll(new_models.TaskModels);
-
-        StateModel.TaskModels.sort((a, b) => a.id.compareTo(b.id));
-        if (new_models.TaskModels.length > 0 &&
-            new_models.TaskModels.length < praram.length) {
-          print('더미 추가');
-          StateModel.TaskModels.add(dummyModel);
-        }
-        return new_models;
-      } else {
-        return TaskStateModel(TaskModels: model_data);
-      }
+final TaskModelStateNotifierProvider =
+    StateNotifierProvider<TaskModelStateNotifier, TaskStateModel>((ref) {
+      return TaskModelStateNotifier();
     });
 
-final TaskStateModelProvider =
-    StateNotifierProvider<TaskStateModelStateNotifier, TaskStateModel>((ref) {
-      return TaskStateModelStateNotifier();
-    });
+class TaskModelStateNotifier extends StateNotifier<TaskStateModel> {
+  TaskModelStateNotifier() : super(TaskStateModel());
 
-class TaskStateModelStateNotifier extends StateNotifier<TaskStateModel> {
-  TaskStateModelStateNotifier() : super(TaskStateModel());
-
-  addTaskModelData(TaskModel model) {
-    state.TaskModels.add(model);
-    // List.generate(state.TaskModels.length, (index) {
-    //   print('${state.TaskModels[index].id}');
-    // });
-    state.TaskModels.sort((a, b) => a.id.compareTo(b.id));
+  addModels(TaskStateModel model) {
+    state = state.copyWith(
+      TaskModels: [...state.TaskModels, ...model.TaskModels],
+    );
   }
 
-  addTaskModeslData(List<TaskModel> model) {
-    state.TaskModels.addAll(model);
-    state.TaskModels.sort((a, b) => a.id.compareTo(b.id));
+  addlist(TaskModel model) {
+    state = state.copyWith(TaskModels: [...state.TaskModels, model]);
+  }
+
+  isEnd(bool isEnd) {
+    state = state.copyWith(isEnd: isEnd);
+  }
+}
+
+final TaskModelPaginationStateNotifierProvider = StateNotifierProvider<
+  TaskModelCursorPaginationStateNotifier,
+  ModelBase
+>((ref) {
+  final dbHelper = ref.watch(dbHelperProvider);
+  final taskModel_notifier = ref.watch(TaskModelStateNotifierProvider.notifier);
+  print('state 초기화');
+  return TaskModelCursorPaginationStateNotifier(
+    DBHelper: dbHelper,
+    taskModel_notifier: taskModel_notifier,
+  );
+});
+
+class TaskModelCursorPaginationStateNotifier extends StateNotifier<ModelBase> {
+  final DbHelper DBHelper;
+  final TaskModelStateNotifier taskModel_notifier;
+  TaskModelCursorPaginationStateNotifier({
+    required this.DBHelper,
+    required this.taskModel_notifier,
+  }) : super(PaginationLoading()) {
+    paginate();
+  }
+
+  paginate({int count = 20}) async {
+    final isError = state is PaginationError;
+    final isPaginationMore = state is PaginationMore;
+    if ((isError) || isPaginationMore) {
+      return;
+    }
+    try {
+      state = PaginationMore();
+      await Future.delayed(Duration(seconds: 2));
+      final new_models = await DBHelper.QueryCusorTaskModelById(
+        table: TABLE_NAME,
+        count: count,
+      );
+      if (new_models.TaskModels.length < count) taskModel_notifier.isEnd(true);
+
+      if (new_models.TaskModels.length > 0) {
+        taskModel_notifier.addModels(new_models);
+      }
+      state = TaskStateModel();
+    } catch (e, s) {
+      state = PaginationError(message: e.toString());
+      print(s);
+    }
   }
 }

@@ -5,6 +5,8 @@ import '../../task/model/task_state_model.dart';
 
 class DbHelper {
   final Database db;
+  int start_id = 0;
+  int end_id = 0;
 
   DbHelper({required this.db});
   Future<TaskModel> QueryTaskModelById({
@@ -31,9 +33,9 @@ class DbHelper {
 
   Future<TaskStateModel> QueryCusorTaskModelById({
     required String table,
-    required int start_id,
-    required int end_id,
+    int count = 20,
   }) async {
+    if (end_id == 0 && start_id == 0) end_id += count;
     final result = await db.query(
       table,
       columns: [
@@ -48,14 +50,16 @@ class DbHelper {
       ],
       where: 'id >= ? AND id <= ?',
       whereArgs: [start_id, end_id],
+      limit: count,
     );
-    final return_result = TaskStateModel();
-
+    final List<TaskModel> return_result = [];
+    start_id += count;
+    end_id += count;
     for (final i in result) {
-      return_result.TaskModels.add(TaskModel.fromMap(i));
+      return_result.add(TaskModel.fromMap(i));
     }
 
-    return return_result;
+    return TaskStateModel(TaskModels: return_result);
   }
 
   Future<List<TaskModel>> QueryAllTaskModelById({required String table}) async {

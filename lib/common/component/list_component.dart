@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mindit/task/model/task_model.dart';
 
 import '../data/color.dart';
 
 class ListComponent extends StatefulWidget {
-  const ListComponent({super.key});
+  final TaskModel? model;
+  const ListComponent({super.key, this.model});
 
   @override
   State<ListComponent> createState() => _ListComponentState();
@@ -32,7 +34,12 @@ class _ListComponentState extends State<ListComponent> {
             ],
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Center(child: Text('게임하기', style: TextStyle(fontSize: 30))),
+          child: Center(
+            child: Text(
+              widget.model != null ? '${widget.model!.title}' : '게임하기',
+              style: TextStyle(fontSize: 30),
+            ),
+          ),
         ),
       ),
     );

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindit/common/component/Box_component.dart';
-import 'package:mindit/common/data/color.dart';
-import 'package:mindit/common/util/data_util.dart';
-import 'package:mindit/task/model/param_model.dart';
 import 'package:mindit/task/model/task_state_model.dart';
 import 'package:mindit/task/provider/task_model_provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../common/component/button_component.dart';
 import '../../common/component/detail_task_card.dart';
+import '../../common/component/list_pagination_component.dart';
 import '../../task/model/task_model.dart';
-import '../provider/reroad_provider.dart';
+import '../../task/util/dummy_data.dart';
 
 class DetailScreen extends ConsumerStatefulWidget {
   final TabController superTabController;
@@ -33,11 +33,8 @@ class _DetailScreenState extends ConsumerState<DetailScreen>
   void initState() {
     // TODO: implement initState
     super.initState();
-    LoadingData();
     controller = ScrollController();
     controller.addListener(ControllerListener);
-    print('initState()');
-    print('${start_id}');
   }
 
   @override
@@ -49,65 +46,40 @@ class _DetailScreenState extends ConsumerState<DetailScreen>
   }
 
   ControllerListener() async {
-    if (!isLoading &&
-        controller.offset > controller.position.maxScrollExtent - 300) {
-      await LoadingData();
+    if (controller.offset > controller.position.maxScrollExtent - 300) {
+      await ref
+          .read(TaskModelPaginationStateNotifierProvider.notifier)
+          .paginate();
     }
-  }
-
-  LoadingData() async {
-    isLoading = true;
-    setState(() {});
-    await Future.delayed(Duration(seconds: 2));
-
-    final addData = await ref.read(
-      TaskModelCursorProvider(
-        TaskModel_Praram(
-          start_id: this.start_id,
-          end_id: this.end_id,
-          length: this.id_increase,
-        ),
-      ),
-    );
-    if (addData.TaskModels.isNotEmpty) {
-      start_id += id_increase;
-      end_id += id_increase;
-    }
-    isLoading = false;
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    final DBdata = ref.watch(TaskStateModelProvider);
-    print(DBdata.TaskModels.length);
-    return ListView.separated(
-      controller: controller,
-      itemCount: DBdata.TaskModels.length,
-      itemBuilder: (context, index) {
-        if (index == DBdata.TaskModels.length - 1) {
-          if (isLoading)
-            return Center(
-              child: CircularProgressIndicator(color: Colors.black),
-            );
-          if (DBdata.TaskModels[index].id == -1)
-            return GestureDetector(
-              onTap: () {
-                widget.superTabController.animateTo(2);
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: BoxComponent(height: 50, child: Icon(Icons.add)),
-              ),
-            );
-        }
-        return DetailTaskCard(DBdata: DBdata.TaskModels[index]);
+    return ListPaginationComponent(
+      superTabController: widget.superTabController,
+    );
+  }
+
+  renderLoading() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: CircularProgressIndicator(color: Colors.black),
+      ),
+    );
+  }
+
+  EndCard() {
+    return GestureDetector(
+      onTap: () {
+        widget.superTabController.animateTo(2);
       },
-      separatorBuilder: (context, index) {
-        return SizedBox(height: 8);
-      },
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10.0),
+        child: BoxComponent(height: 50, child: Icon(Icons.add)),
+      ),
     );
   }
 }

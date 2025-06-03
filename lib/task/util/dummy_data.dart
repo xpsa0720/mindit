@@ -60,10 +60,18 @@ List<TaskModel> generateDummyTasks() {
 }
 
 final dummyModel = TaskModel(
-  title: '',
-  dayOfWeekModel: DayOfWeekModel(dayOfWeek: []),
+  title: '런닝 뛰기',
+  dayOfWeekModel: DayOfWeekModel(
+    dayOfWeek: [
+      DayOfWeek.Mon,
+      DayOfWeek.Tue,
+      DayOfWeek.Wed,
+      DayOfWeek.Thu,
+      DayOfWeek.Fri,
+    ],
+  ),
   descriptor: '',
-  mainColor: '',
+  mainColor: pastelGrayHex.toString(),
   implementationRate: 0,
   sequenceDay: 0,
 );

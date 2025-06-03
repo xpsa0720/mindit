@@ -17,8 +17,10 @@ class _CalendarComponentState extends State<CalendarComponent> {
       firstDay: DateTime.utc(2000, 10, 16),
       lastDay: DateTime.utc(2060, 3, 14),
       focusedDay: focuseDay,
-
       //--------------------------------
+      onPageChanged: (focusedDay) {
+        this.focuseDay = focusedDay;
+      },
       headerVisible: true,
       headerStyle: HeaderStyle(
         titleCentered: true,
@@ -29,6 +31,7 @@ class _CalendarComponentState extends State<CalendarComponent> {
           fontWeight: FontWeight.w500,
         ),
       ),
+
       daysOfWeekStyle: DaysOfWeekStyle(
         weekdayStyle: TextStyle(color: Colors.black, fontSize: 17),
         weekendStyle: TextStyle(color: Colors.black, fontSize: 17),

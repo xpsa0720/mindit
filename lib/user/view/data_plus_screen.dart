@@ -20,7 +20,10 @@ class DataPlusScreen extends ConsumerStatefulWidget {
   ConsumerState<DataPlusScreen> createState() => _DataPlusScreenState();
 }
 
-class _DataPlusScreenState extends ConsumerState<DataPlusScreen> {
+class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
+    with AutomaticKeepAliveClientMixin {
+  bool get wantKeepAlive => true;
+
   List<String> DayOfWeek_list = ['월', '화', '수', '목', '금', '토', '일'];
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptorController = TextEditingController();
@@ -30,6 +33,7 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen> {
   int seletedColor = 0;
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       children: [
         BoxComponent(
@@ -82,7 +86,8 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen> {
     );
     final id = await state.InsertTaskModel(model: model, table: TABLE_NAME);
     model.id = id;
-    ref.watch(TaskStateModelProvider.notifier).addTaskModelData(model);
+    ref.read(TaskModelStateNotifierProvider.notifier).addlist(model);
+    return id;
   }
 
   ColorWidget() {
