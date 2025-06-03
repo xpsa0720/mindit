@@ -2,8 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindit/common/data/sqlite.dart';
 import 'package:mindit/sqlite/model/db_helper.dart';
 import 'package:mindit/task/model/task_model.dart';
-import 'package:mindit/task/model/task_state_model.dart';
+import 'package:mindit/task/model/task_state_model.dart'
+    hide PaginationLoading, PaginationError, PaginationMore;
 
+import '../../common/model/pagination_model.dart';
 import '../../sqlite/model/base_model.dart';
 import '../../sqlite/provider/db_provider.dart';
 
@@ -32,7 +34,7 @@ class TaskModelStateNotifier extends StateNotifier<TaskStateModel> {
 
 final TaskModelPaginationStateNotifierProvider = StateNotifierProvider<
   TaskModelCursorPaginationStateNotifier,
-  ModelBase
+  Pagination
 >((ref) {
   final dbHelper = ref.watch(dbHelperProvider);
   final taskModel_notifier = ref.watch(TaskModelStateNotifierProvider.notifier);
@@ -43,7 +45,7 @@ final TaskModelPaginationStateNotifierProvider = StateNotifierProvider<
   );
 });
 
-class TaskModelCursorPaginationStateNotifier extends StateNotifier<ModelBase> {
+class TaskModelCursorPaginationStateNotifier extends StateNotifier<Pagination> {
   final DbHelper DBHelper;
   final TaskModelStateNotifier taskModel_notifier;
   TaskModelCursorPaginationStateNotifier({
@@ -53,6 +55,7 @@ class TaskModelCursorPaginationStateNotifier extends StateNotifier<ModelBase> {
     paginate();
   }
 
+  @override
   paginate({int count = 20}) async {
     final isError = state is PaginationError;
     final isPaginationMore = state is PaginationMore;
@@ -71,7 +74,7 @@ class TaskModelCursorPaginationStateNotifier extends StateNotifier<ModelBase> {
       if (new_models.TaskModels.length > 0) {
         taskModel_notifier.addModels(new_models);
       }
-      state = TaskStateModel();
+      state = Pagination();
     } catch (e, s) {
       state = PaginationError(message: e.toString());
       print(s);

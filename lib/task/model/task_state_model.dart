@@ -15,12 +15,3 @@ class TaskStateModel extends ModelBase {
     );
   }
 }
-
-class PaginationLoading extends TaskStateModel {}
-
-class PaginationMore extends TaskStateModel {}
-
-class PaginationError extends ModelBase {
-  final String message;
-  PaginationError({required this.message});
-}

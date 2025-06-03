@@ -1,3 +1,4 @@
+import 'package:animated_check/animated_check.dart';
 import 'package:flutter/material.dart';
 import 'package:mindit/task/model/task_model.dart';
 
@@ -5,41 +6,75 @@ import '../data/color.dart';
 
 class ListComponent extends StatefulWidget {
   final TaskModel? model;
-  const ListComponent({super.key, this.model});
+
+  final AnimationController? checkController;
+  final Animation<double>? animation;
+  const ListComponent({
+    super.key,
+    this.model,
+    this.checkController,
+    this.animation,
+  });
 
   @override
   State<ListComponent> createState() => _ListComponentState();
 }
 
-class _ListComponentState extends State<ListComponent> {
+class _ListComponentState extends State<ListComponent>
+    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
+  bool get wantKeepAlive => true;
   bool isClear = false;
 
   @override
+  void initState() {
+    // TODO: implement initState
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeIn,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 20,
-                color: isClear ? CLEAR_COLOR : Colors.white,
+        onTap: widget.checkController == null ? null : onTap,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: Color(0xFFDEDEDE),
+                border: Border.all(color: Colors.black),
               ),
-            ],
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Center(
-            child: Text(
-              widget.model != null ? '${widget.model!.title}' : '게임하기',
-              style: TextStyle(fontSize: 30),
+              child:
+                  widget.checkController == null
+                      ? null
+                      : AnimatedCheck(
+                        progress: widget.animation!,
+                        size: 30,
+                        color: Colors.black,
+                      ),
             ),
-          ),
+            SizedBox(width: 6),
+            SizedBox(
+              width: 150,
+              height: 50,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  Text(
+                    widget.model != null ? '${widget.model!.title}' : '게임하기',
+                    // '게임하기aaaaaaaaa',
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.w200),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -48,6 +83,10 @@ class _ListComponentState extends State<ListComponent> {
   onTap() {
     setState(() {
       isClear = !isClear;
+      if (isClear)
+        widget.checkController!.forward();
+      else
+        widget.checkController!.reverse();
     });
   }
 }

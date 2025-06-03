@@ -7,7 +7,7 @@ part of 'task_model.dart';
 // **************************************************************************
 
 TaskModel _$TaskModelFromJson(Map<String, dynamic> json) => TaskModel(
-  id: (json['id'] as num?)?.toInt() ?? 0,
+  id: (json['id'] as num?)?.toInt() ?? -1,
   title: json['title'] as String,
   dayOfWeekModel: DayOfWeekModel.fromJson(
     json['dayOfWeekModel'] as Map<String, dynamic>,

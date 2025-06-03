@@ -50,7 +50,6 @@ class TaskModel extends ModelBase {
   }
 
   Map<String, String> toMap() {
-    print(mainColor.toString());
     return {
       'title': title,
       'dayOfWeekModel': DataUtils.dayOfWeekToJsonData(dayOfWeekModel),
@@ -61,4 +60,6 @@ class TaskModel extends ModelBase {
       'isAlarm': isAlarm ? '1' : '0',
     };
   }
+
+  Map<String, dynamic> toJson() => _$TaskModelToJson(this);
 }

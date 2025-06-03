@@ -39,7 +39,7 @@ class DetailTaskCard extends StatelessWidget {
           ),
           color: Colors.white,
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Colors.black54, width: 2),
+          border: Border.all(color: Colors.black87, width: 2),
         ),
       ),
     );

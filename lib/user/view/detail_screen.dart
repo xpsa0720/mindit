@@ -22,64 +22,12 @@ class DetailScreen extends ConsumerStatefulWidget {
 class _DetailScreenState extends ConsumerState<DetailScreen>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
-
-  late ScrollController controller;
-  bool isLoading = false;
-  int start_id = 0;
-  int end_id = 20;
-  int id_increase = 20;
-  bool isEnd = false;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    controller = ScrollController();
-    controller.addListener(ControllerListener);
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    controller.dispose();
-    controller.removeListener(ControllerListener);
-  }
-
-  ControllerListener() async {
-    if (controller.offset > controller.position.maxScrollExtent - 300) {
-      await ref
-          .read(TaskModelPaginationStateNotifierProvider.notifier)
-          .paginate();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
     return ListPaginationComponent(
       superTabController: widget.superTabController,
-    );
-  }
-
-  renderLoading() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: CircularProgressIndicator(color: Colors.black),
-      ),
-    );
-  }
-
-  EndCard() {
-    return GestureDetector(
-      onTap: () {
-        widget.superTabController.animateTo(2);
-      },
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 10.0),
-        child: BoxComponent(height: 50, child: Icon(Icons.add)),
-      ),
     );
   }
 }

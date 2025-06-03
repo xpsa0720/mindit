@@ -31,7 +31,7 @@ class BoxComponent extends StatelessWidget {
                 ? BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.black54, width: 0),
+                  border: Border.all(color: Colors.black87, width: 2),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.3),

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindit/common/component/logo_component.dart';
 import 'package:mindit/common/view/root_tab.dart';
+import 'package:mindit/user/provider/user_information_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
-
+import 'package:shared_preferences_android/shared_preferences_android.dart';
 import '../../sqlite/provider/db_provider.dart';
+import '../../user/provider/prefs_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -15,11 +18,22 @@ class SplashScreen extends ConsumerStatefulWidget {
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
   bool InitDBLoading = false;
+  bool InitUserLoading = false;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     InitDB();
+    InitUserInfo();
+  }
+
+  InitUserInfo() async {
+    await ref.read(prefsStateNotifierProvider.notifier).InitPrefs();
+    await ref.read(UserInformationStateNotifierProvider.notifier).InitInfo();
+    setState(() {
+      InitUserLoading = true;
+    });
   }
 
   InitDB() async {
@@ -38,7 +52,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (InitDBLoading) {
+    if (InitDBLoading && InitUserLoading) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) => checkData());
     }
     return Scaffold(

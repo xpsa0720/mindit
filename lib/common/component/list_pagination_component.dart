@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindit/common/component/Box_component.dart';
 import 'package:mindit/common/component/render_loading_component.dart';
-import 'package:mindit/task/model/task_state_model.dart';
+import 'package:mindit/common/model/pagination_model.dart';
+import 'package:mindit/task/model/task_state_model.dart'
+    hide PaginationError, PaginationMore;
 import 'package:mindit/task/provider/task_model_provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
