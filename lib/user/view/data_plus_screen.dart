@@ -113,9 +113,6 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
     }
 
     final state = ref.watch(dbHelperProvider);
-    final user_provider = ref.watch(
-      UserInformationStateNotifierProvider.notifier,
-    );
     final task_provider = ref.read(TaskModelStateNotifierProvider.notifier);
     final model = TaskModel(
       title: titleController.text,
@@ -127,8 +124,8 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
     );
     final id = await state.InsertTaskModel(model: model, table: TABLE_NAME);
     model.id = id;
+    print(model.id);
     task_provider.addlist(model);
-    user_provider.AddTaskModel(model);
     return id;
   }
 

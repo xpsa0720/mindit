@@ -56,6 +56,7 @@ class DbHelper {
     start_id += count;
     end_id += count;
     for (final i in result) {
+      print(i['id'].runtimeType);
       return_result.add(TaskModel.fromMap(i));
     }
 
@@ -87,7 +88,7 @@ class DbHelper {
   }
 
   InsertTaskModel({required TaskModel model, required String table}) async {
-    await db.insert(table, model.toMap());
+    await db.insert(table, model.Sqlite_toMap());
     final result = await db.query(
       table,
       columns: ['id'],

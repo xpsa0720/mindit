@@ -13,9 +13,6 @@ UserInformation _$UserInformationFromJson(Map<String, dynamic> json) =>
       allClearDays: (json['allClearDays'] as List<dynamic>?)
           ?.map((e) => DateTime.parse(e as String))
           .toList(),
-      tasks: (json['tasks'] as List<dynamic>?)
-          ?.map((e) => TaskModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
     );
 
 Map<String, dynamic> _$UserInformationToJson(UserInformation instance) =>
@@ -25,5 +22,4 @@ Map<String, dynamic> _$UserInformationToJson(UserInformation instance) =>
       'allClearDays': instance.allClearDays
           .map((e) => e.toIso8601String())
           .toList(),
-      'tasks': instance.tasks,
     };

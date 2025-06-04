@@ -35,6 +35,15 @@ class TaskModel extends ModelBase {
       _$TaskModelFromJson(json);
 
   factory TaskModel.fromMap(Map<String, dynamic> json) {
+    if (json['id'].runtimeType == String) {
+      json['id'] = int.parse(json['id']);
+    }
+    if (json['implementationRate'].runtimeType == String) {
+      json['implementationRate'] = double.parse(json['implementationRate']);
+    }
+    if (json['sequenceDay'].runtimeType == String) {
+      json['sequenceDay'] = int.parse(json['sequenceDay']);
+    }
     return TaskModel(
       id: json['id'],
       title: json['title'],
@@ -49,7 +58,7 @@ class TaskModel extends ModelBase {
     );
   }
 
-  Map<String, String> toMap() {
+  Map<String, String> Sqlite_toMap() {
     return {
       'title': title,
       'dayOfWeekModel': DataUtils.dayOfWeekToJsonData(dayOfWeekModel),

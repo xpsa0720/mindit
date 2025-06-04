@@ -28,8 +28,8 @@ class UserInformationStateNotifier extends StateNotifier<ModelBase> {
           state = ModelError(message: 'User 정보가 없습니다1');
           print('응애');
         }
-        final model = UserInformation.fromJson(jsonDecode(json!));
-        print(model.tasks);
+        final model = UserInformation.CustomfromJson(jsonDecode(json!));
+        // print(model.tasks[0].dayOfWeekModel.dayOfWeek.length);
         state = model;
       } else {
         state = ModelError(message: 'User 정보가 없습니다2');
@@ -38,15 +38,6 @@ class UserInformationStateNotifier extends StateNotifier<ModelBase> {
       print(e);
       print(s);
       state = ModelError(message: '에러 남');
-    }
-  }
-
-  AddTaskModel(TaskModel model) async {
-    if (state is UserInformation) {
-      final cp = state as UserInformation;
-      state = cp.copyWith(tasks: [...cp.tasks, model]);
-      print(cp.tasks);
-      await SaveUserInfo();
     }
   }
 
