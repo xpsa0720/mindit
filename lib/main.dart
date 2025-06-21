@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mindit/user/router/router.dart';
+import 'package:mindit/user/view/screen_on_screen.dart';
 // import 'package:intl/date_symbol_data_file.dart';
 
 import 'common/view/splash_screen.dart';
@@ -20,9 +22,15 @@ class _App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: SplashScreen(),
+    return MaterialApp.router(
+      routerConfig: router,
       theme: ThemeData(fontFamily: "NotoSans"),
     );
   }
+}
+
+@pragma("vm:entry-point")
+void ScreenOnFlutterMain() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MaterialApp(home: ScreenOnScreen()));
 }

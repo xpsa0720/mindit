@@ -6,6 +6,7 @@ class BoxComponent extends StatelessWidget {
   final double? height;
   final BoxDecoration? boxDecoration;
   final EdgeInsets? padding;
+  final bool shadow;
   const BoxComponent({
     super.key,
     required this.child,
@@ -13,6 +14,7 @@ class BoxComponent extends StatelessWidget {
     this.height,
     this.boxDecoration,
     this.padding,
+    this.shadow = true,
   });
 
   @override
@@ -33,11 +35,12 @@ class BoxComponent extends StatelessWidget {
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(color: Colors.black87, width: 2),
                   boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      blurRadius: 1,
-                      offset: Offset(2, 4),
-                    ),
+                    if (shadow)
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        blurRadius: 1,
+                        offset: Offset(2, 4),
+                      ),
                   ],
                 )
                 : boxDecoration!.copyWith(

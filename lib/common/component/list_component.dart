@@ -60,18 +60,17 @@ class _ListComponentState extends State<ListComponent>
                       ),
             ),
             SizedBox(width: 6),
+
             SizedBox(
-              width: 150,
+              width: 130,
               height: 50,
-              child: ListView(
+              child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                children: [
-                  Text(
-                    widget.model != null ? '${widget.model!.title}' : '게임하기',
-                    // '게임하기aaaaaaaaa',
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.w200),
-                  ),
-                ],
+                child: Text(
+                  widget.model != null ? '${widget.model!.title}' : '게임하기',
+                  // '게임하기aaaaaaaaa',
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w200),
+                ),
               ),
             ),
           ],

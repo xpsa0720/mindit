@@ -9,3 +9,5 @@ List<DayOfWeek> All_DayOfWeek_list = [
   DayOfWeek.Sat,
   DayOfWeek.Sun,
 ];
+
+String entryPointName = "ScreenOnFlutterMain";

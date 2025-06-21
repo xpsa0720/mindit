@@ -704,6 +704,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.5"
+  screen_on_flutter:
+    dependency: "direct main"
+    description:
+      path: "C:\\Users\\yongjin\\AndroidStudioProjects\\screen_on_flutter"
+      relative: false
+    source: path
+    version: "0.0.1"
   shared_preferences:
     dependency: "direct main"
     description:

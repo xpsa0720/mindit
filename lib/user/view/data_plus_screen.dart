@@ -7,6 +7,7 @@ import 'package:mindit/task/model/task_model.dart';
 import 'package:mindit/task/provider/task_model_provider.dart';
 import 'package:mindit/user/provider/user_information_provider.dart';
 
+import '../../common/component/text_component.dart';
 import '../../common/component/text_filed_component.dart';
 import '../../common/data/color.dart';
 import '../../common/data/sqlite.dart';
@@ -17,12 +18,16 @@ import '../provider/prefs_provider.dart';
 class DataPlusScreen extends ConsumerStatefulWidget {
   const DataPlusScreen({super.key});
 
+
+  static String get routePath => '/plus';
+
   @override
   ConsumerState<DataPlusScreen> createState() => _DataPlusScreenState();
 }
 
 class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
     with AutomaticKeepAliveClientMixin {
+
   bool get wantKeepAlive => true;
 
   List<String> DayOfWeek_list = ['월', '화', '수', '목', '금', '토', '일'];
@@ -46,19 +51,19 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
           padding: EdgeInsets.all(12),
           child: Column(
             children: [
-              Row(children: [renderText(text: '실천 내용')]),
+              Row(children: [TextComponent(text: '실천 내용')]),
               Padding(
                 padding: const EdgeInsets.only(top: 5, right: 20),
                 child: TextFiledComponent(
                   textEditingController: titleController,
                 ),
               ),
-              renderText(
+              TextComponent(
                 text: '*내용을 입력해 주세요!*',
                 color: errorTitle ? Colors.red : Colors.transparent,
               ),
-              SizedBox(height: 20),
-              Row(children: [renderText(text: '실천 설명')]),
+              SizedBox(height: 10),
+              Row(children: [TextComponent(text: '실천 설명')]),
               Padding(
                 padding: const EdgeInsets.only(top: 5, right: 20),
                 child: TextFiledComponent(
@@ -68,12 +73,12 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
               SizedBox(height: 32),
               SelectDayWidget(),
               SelectWeekDayWidget(),
-              renderText(
+              TextComponent(
                 text: '*활동 날짜를 설정해 주세요!*',
                 color: errorDayOfWeek ? Colors.red : Colors.transparent,
               ),
 
-              SizedBox(height: 20),
+              SizedBox(height: 0),
               AleramWidget(),
               SizedBox(height: 32),
               ColorWidget(),
@@ -132,24 +137,28 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
   ColorWidget() {
     return Column(
       children: [
-        Row(children: [renderText(text: '메인 색상')]),
+        Row(children: [TextComponent(text: '메인 색상')]),
         SizedBox(height: 8),
-        Row(
-          children: List.generate(PASTEL_COLORS.length, (index) {
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  seletedColor = index;
-                });
-              },
-              child: Container(
-                width: 40,
-                height: 40,
-                color: PASTEL_COLORS[index],
-                child: seletedColor == index ? Icon(Icons.check) : null,
-              ),
-            );
-          }),
+        SizedBox(
+          height: 50,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: List.generate(PASTEL_COLORS.length, (index) {
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    seletedColor = index;
+                  });
+                },
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  color: PASTEL_COLORS[index],
+                  child: seletedColor == index ? Icon(Icons.check) : null,
+                ),
+              );
+            }),
+          ),
         ),
         SizedBox(height: 16),
       ],
@@ -159,7 +168,7 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
   AleramWidget() {
     return Row(
       children: [
-        renderText(text: '알림 허용'),
+        TextComponent(text: '알림 허용'),
         renderButton(
           text: '예',
           callback: () {
@@ -185,7 +194,7 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
   SelectDayWidget() {
     return Row(
       children: [
-        renderText(text: '활동 날짜'),
+        TextComponent(text: '활동 날짜'),
         renderButton(
           text: '매일',
           callback: () {
@@ -227,17 +236,6 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
           },
         );
       }),
-    );
-  }
-
-  Widget renderText({required String text, Color? color}) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 20,
-        color: color == null ? Colors.black : color,
-      ),
     );
   }
 

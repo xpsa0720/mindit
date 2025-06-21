@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mindit/common/layout/default_layout.dart';
 
+import '../../user/router/router.dart';
 import '../../user/view/dash_board_screen.dart';
 import '../../user/view/data_plus_screen.dart';
 import '../../user/view/detail_screen.dart';
 import '../../user/view/setting_screen.dart';
 
 class RootTab extends StatefulWidget {
-  const RootTab({super.key});
+  final Widget child;
+  const RootTab({super.key, required this.child});
 
   @override
   State<RootTab> createState() => _RootTabState();
@@ -33,14 +36,24 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
     print('dispose');
   }
 
+  int getIndex(BuildContext context) {
+    final currentPath = GoRouterState.of(context).uri.toString();
+    if (currentPath == DashBoardScreen.routePath) return 0;
+    if (currentPath == DetailScreen.routePath) return 1;
+    if (currentPath == DataPlusScreen.routePath) return 2;
+    if (currentPath == SettingScreen.routePath) return 3;
+    return 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
       titile: 'MindIt',
       tabBar: TabBar(
         controller: tabBarController,
-        // tabAlignment: TabAlignment.center,
-        // unselectedLabelColor: Colors.grey, // 선택되지 않은 탭의 텍스트 색상
+        onTap: (index) {
+          context.go(locationPath[index]);
+        },
         tabs:
             tabBarList
                 .map(
@@ -49,7 +62,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
                       e,
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
-                        fontSize: 19,
+                        fontSize: 17.2,
                       ),
                     ),
                   ),
@@ -66,14 +79,12 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         isScrollable: false,
         indicatorAnimation: TabIndicatorAnimation.linear,
       ),
+      // child: widget.child,
       child: TabBarView(
         controller: tabBarController,
         children: [
-          DashBoardScreen(superTabController: tabBarController),
-          DetailScreen(
-            superTabController: tabBarController,
-            key: PageStorageKey('DetailScreen'),
-          ),
+          DashBoardScreen(),
+          DetailScreen(key: PageStorageKey('DetailScreen')),
           DataPlusScreen(),
           SettingScreen(),
         ],

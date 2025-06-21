@@ -1,6 +1,10 @@
+import 'package:json_annotation/json_annotation.dart';
 import 'package:mindit/sqlite/model/base_model.dart';
 import 'package:mindit/task/model/task_model.dart';
 
+part 'task_state_model.g.dart';
+
+@JsonSerializable()
 class TaskStateModel extends ModelBase {
   bool isEnd;
   List<TaskModel> TaskModels;
@@ -14,4 +18,7 @@ class TaskStateModel extends ModelBase {
       TaskModels: TaskModels ?? this.TaskModels,
     );
   }
+
+  factory TaskStateModel.fromJson(Map<String, dynamic> json) =>
+      _$TaskStateModelFromJson(json);
 }

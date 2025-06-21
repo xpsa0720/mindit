@@ -4,5 +4,6 @@ class ModelLoading extends ModelBase {}
 
 class ModelError extends ModelBase {
   final String message;
-  ModelError({required this.message});
+  final bool? jsonNull;
+  ModelError({required this.message, this.jsonNull});
 }

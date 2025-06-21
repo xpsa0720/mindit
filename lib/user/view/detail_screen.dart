@@ -12,9 +12,8 @@ import '../../task/model/task_model.dart';
 import '../../task/util/dummy_data.dart';
 
 class DetailScreen extends ConsumerStatefulWidget {
-  final TabController superTabController;
-  const DetailScreen({super.key, required this.superTabController});
-
+  const DetailScreen({super.key});
+  static String get routePath => '/detail';
   @override
   ConsumerState<DetailScreen> createState() => _DetailScreenState();
 }
@@ -22,12 +21,11 @@ class DetailScreen extends ConsumerStatefulWidget {
 class _DetailScreenState extends ConsumerState<DetailScreen>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    return ListPaginationComponent(
-      superTabController: widget.superTabController,
-    );
+    return ListPaginationComponent();
   }
 }

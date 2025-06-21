@@ -10,13 +10,14 @@ class CalendarComponent extends StatefulWidget {
 
 class _CalendarComponentState extends State<CalendarComponent> {
   DateTime focuseDay = DateTime.now();
-  DateTime selectedDay = DateTime.now();
+  DateTime? selectedDay = DateTime.now();
   @override
   Widget build(BuildContext context) {
     return TableCalendar(
       firstDay: DateTime.utc(2000, 10, 16),
       lastDay: DateTime.utc(2060, 3, 14),
       focusedDay: focuseDay,
+
       //--------------------------------
       onPageChanged: (focusedDay) {
         this.focuseDay = focusedDay;
@@ -58,7 +59,10 @@ class _CalendarComponentState extends State<CalendarComponent> {
       },
       onDaySelected: (selectedDay, focusedDay) {
         setState(() {
-          this.selectedDay = selectedDay;
+          if (this.selectedDay == selectedDay) {
+            this.selectedDay = null;
+          } else
+            this.selectedDay = selectedDay;
           this.focuseDay = focusedDay;
         });
       },

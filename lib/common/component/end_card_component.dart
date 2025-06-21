@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mindit/user/view/data_plus_screen.dart';
 
 import 'Box_component.dart';
 
 class EndCardComponent extends StatelessWidget {
-  final TabController superTabController;
-  const EndCardComponent({super.key, required this.superTabController});
+  const EndCardComponent({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        superTabController.animateTo(2);
+        context.go(DataPlusScreen.routePath);
       },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 10.0),

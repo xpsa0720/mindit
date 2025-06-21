@@ -14,9 +14,7 @@ import '../../task/util/dummy_data.dart';
 import 'end_card_component.dart';
 
 class ListPaginationComponent extends ConsumerStatefulWidget {
-  final TabController superTabController;
-
-  const ListPaginationComponent({super.key, required this.superTabController});
+  const ListPaginationComponent({super.key});
 
   @override
   ConsumerState<ListPaginationComponent> createState() =>
@@ -92,9 +90,7 @@ class _ListPaginationComponentState
           );
         }
         if (index == cp.TaskModels.length)
-          return cp.isEnd
-              ? EndCardComponent(superTabController: widget.superTabController)
-              : RenderLoadingComponent();
+          return cp.isEnd ? EndCardComponent() : RenderLoadingComponent();
         return DetailTaskCard(DBdata: cp.TaskModels[index]);
       },
       separatorBuilder: (context, index) {

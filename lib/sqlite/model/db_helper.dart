@@ -24,6 +24,7 @@ class DbHelper {
         'implementationRate',
         'sequenceDay',
         'isAlarm',
+        'clearDay',
       ],
       where: 'id = ?',
       whereArgs: [id],
@@ -47,6 +48,7 @@ class DbHelper {
         'implementationRate',
         'sequenceDay',
         'isAlarm',
+        'clearDay',
       ],
       where: 'id >= ? AND id <= ?',
       whereArgs: [start_id, end_id],
@@ -75,6 +77,7 @@ class DbHelper {
         'implementationRate',
         'sequenceDay',
         'isAlarm',
+        'clearDay',
       ],
     );
 
@@ -100,5 +103,18 @@ class DbHelper {
 
   DeletetaskModelById({required String id, required String table}) async {
     await db.delete(table, where: 'id = ?', whereArgs: [id]);
+  }
+
+  ClearTaskModel({
+    required String id,
+    required String table,
+    required String time,
+  }) async {
+    await db.update(
+      table,
+      {'clearDay': time},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }

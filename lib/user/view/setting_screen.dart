@@ -1,28 +1,98 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mindit/common/component/Box_component.dart';
+import 'package:mindit/common/component/button_component.dart';
+import 'package:mindit/user/provider/user_information_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import '../../common/component/text_component.dart';
+import '../../common/component/text_filed_component.dart';
 import '../model/user_information.dart';
 
-class SettingScreen extends StatelessWidget {
+class SettingScreen extends ConsumerStatefulWidget {
   const SettingScreen({super.key});
+  static String get routePath => '/setting';
+
+  @override
+  ConsumerState<SettingScreen> createState() => _SettingScreenState();
+}
+
+class _SettingScreenState extends ConsumerState<SettingScreen>
+    with AutomaticKeepAliveClientMixin {
+  bool get wantKeepAlive => true;
+
+  final TextEditingController textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    final state = ref.watch(UserInformationStateNotifierProvider);
+    print("셋팅 호출: $state");
+    if (state is UserInformation) {
+      final cp = state as UserInformation;
+      print(cp.name);
+      textEditingController.text = cp.name;
+    }
     return Column(
       children: [
-        ElevatedButton(
-          onPressed: () async {
-            final prefs = await SharedPreferences.getInstance();
-            final model = UserInformation(name: 'asdasd', sequenceDay: 3);
+        BoxComponent(
+          width: double.infinity,
+          height: 600,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(children: [TextComponent(text: '이름')]),
+                SizedBox(height: 10),
+                textWidget(),
+                SizedBox(height: 15),
+                AlramWidget(),
+                SizedBox(height: 15),
 
-            await prefs.setString('userInfo', jsonEncode(model.CustomtoJson()));
-
-            final json = await prefs.getString('userInfo');
-            final asdd = jsonDecode(json!);
-            print(asdd);
-          },
-          child: Text('1234'),
+                ScreenOnServiceWidget(),
+              ],
+            ),
+          ),
         ),
+      ],
+    );
+  }
+
+  textWidget() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 300,
+          child: TextFiledComponent(
+            textEditingController: textEditingController,
+          ),
+        ),
+      ],
+    );
+  }
+
+  AlramWidget() {
+    return Row(
+      children: [
+        TextComponent(text: "모든 알림 허용"),
+        ButtonComponent(enableColor: true, callback: () {}, text: "예"),
+        ButtonComponent(enableColor: true, callback: () {}, text: "아니요"),
+      ],
+    );
+  }
+
+  ScreenOnServiceWidget() {
+    return Row(
+      children: [
+        TextComponent(text: "잠금 화면 표시"),
+        ButtonComponent(enableColor: true, callback: () {}, text: "예"),
+        ButtonComponent(enableColor: true, callback: () {}, text: "아니요"),
       ],
     );
   }

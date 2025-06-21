@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 
 class TextFiledComponent extends StatelessWidget {
   final TextEditingController textEditingController;
-  TextFiledComponent({super.key, required this.textEditingController});
+  final double? width;
+  TextFiledComponent({
+    super.key,
+    required this.textEditingController,
+    this.width,
+  });
   final defaultBoarder = OutlineInputBorder(
     borderRadius: BorderRadius.circular(10),
     borderSide: BorderSide(color: Colors.black),

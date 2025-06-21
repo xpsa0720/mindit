@@ -1,43 +1,54 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindit/common/model/prefs_model.dart';
 import 'package:mindit/task/model/task_model.dart';
+import 'package:mindit/task/provider/task_model_provider.dart';
 import 'package:mindit/user/model/user_information.dart';
 import 'package:mindit/user/provider/prefs_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../../sqlite/model/base_model.dart';
+import '../../task/model/task_state_model.dart';
 
 //
 final UserInformationStateNotifierProvider =
     StateNotifierProvider<UserInformationStateNotifier, ModelBase>((ref) {
       final prefs = ref.watch(prefsStateNotifierProvider);
+      final taskModel = ref.watch(TaskModelStateNotifierProvider);
+      print('왜?');
       return UserInformationStateNotifier(
+        taskModel: taskModel,
         prefs: prefs is PrefsModel ? prefs.prefs : null,
       );
     });
 
 class UserInformationStateNotifier extends StateNotifier<ModelBase> {
+  final TaskStateModel taskModel;
   final SharedPreferences? prefs;
-  UserInformationStateNotifier({this.prefs}) : super(ModelLoading());
+  UserInformationStateNotifier({required this.taskModel, this.prefs})
+    : super(ModelLoading()) {
+    InitInfo();
+  }
 
   InitInfo() async {
     try {
       if (prefs != null) {
         final json = await prefs!.getString('userInfo');
         if (json == null) {
-          state = ModelError(message: 'User 정보가 없습니다1');
-          print('응애');
+          state = ModelError(message: "json null", jsonNull: true);
+          return;
         }
-        final model = UserInformation.CustomfromJson(jsonDecode(json!));
-        // print(model.tasks[0].dayOfWeekModel.dayOfWeek.length);
+        final model = UserInformation.CustomfromJson(jsonDecode(json));
+        model.tasks = taskModel;
         state = model;
+        print('모델 개수 ${model.tasks.TaskModels}');
+        print('이름: ${model.name}');
       } else {
         state = ModelError(message: 'User 정보가 없습니다2');
       }
     } catch (e, s) {
-      print(e);
-      print(s);
-      state = ModelError(message: '에러 남');
+      print(e.toString());
+      print(s.toString());
+      state = ModelError(message: 'InitInfo 에러 남');
     }
   }
 
@@ -53,9 +64,18 @@ class UserInformationStateNotifier extends StateNotifier<ModelBase> {
         state = ModelError(message: 'User 정보가 없습니다2');
       }
     } catch (e, s) {
-      print(e);
-      print(s);
-      state = ModelError(message: '에러 남');
+      print(e.toString());
+      print(s.toString());
+      state = ModelError(message: 'InitInfo 에러 남');
     }
+  }
+
+  CreateNewUserInfo({String? name}) {
+    state = UserInformation(
+      name: name == null ? "" : name,
+      sequenceDay: 0,
+      allClearDays: [],
+      tasks: taskModel,
+    );
   }
 }

@@ -34,7 +34,7 @@ class dbStateNotifier extends StateNotifier<ModelBase> {
       version: db_version,
       onCreate: (database, version) async {
         await database.execute(
-          'CREATE TABLE TASKTABLE (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, dayOfWeekModel TEXT, descriptor TEXT, mainColor TEXT, implementationRate REAL, sequenceDay INTEGER, isAlarm INTEGER);',
+          'CREATE TABLE TASKTABLE (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, dayOfWeekModel TEXT, descriptor TEXT, mainColor TEXT, implementationRate REAL, sequenceDay INTEGER, isAlarm INTEGER, clearDay TEXT);',
         );
       },
     );
