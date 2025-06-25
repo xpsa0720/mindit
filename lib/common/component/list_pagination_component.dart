@@ -81,7 +81,7 @@ class _ListPaginationComponentState
       itemCount:
           state is PaginationMore && cp.TaskModels.isEmpty
               ? 10
-              : cp.TaskModels.length + 1,
+              : cp.TaskModels.length + 2,
       itemBuilder: (context, index) {
         if (state is PaginationMore && cp.TaskModels.isEmpty) {
           return Skeletonizer(
@@ -91,6 +91,9 @@ class _ListPaginationComponentState
         }
         if (index == cp.TaskModels.length)
           return cp.isEnd ? EndCardComponent() : RenderLoadingComponent();
+        if (index == cp.TaskModels.length + 1) {
+          return SizedBox(height: 500); // 인위적인 아래 여백
+        }
         return DetailTaskCard(DBdata: cp.TaskModels[index]);
       },
       separatorBuilder: (context, index) {

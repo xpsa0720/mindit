@@ -6,16 +6,21 @@ import 'package:mindit/task/model/task_state_model.dart'
     hide PaginationLoading, PaginationError, PaginationMore;
 
 import '../../common/model/pagination_model.dart';
+import '../../common/util/data_util.dart';
 import '../../sqlite/model/base_model.dart';
 import '../../sqlite/provider/db_provider.dart';
+import '../model/day_of_week_model.dart';
+import '../util/dummy_data.dart';
 
 final TaskModelStateNotifierProvider =
     StateNotifierProvider<TaskModelStateNotifier, TaskStateModel>((ref) {
-      return TaskModelStateNotifier();
+      final dbHelper = ref.watch(dbHelperProvider);
+      return TaskModelStateNotifier(DBHelper: dbHelper);
     });
 
 class TaskModelStateNotifier extends StateNotifier<TaskStateModel> {
-  TaskModelStateNotifier() : super(TaskStateModel());
+  final DbHelper DBHelper;
+  TaskModelStateNotifier({required this.DBHelper}) : super(TaskStateModel());
 
   addModels(TaskStateModel model) {
     state = state.copyWith(
@@ -23,13 +28,35 @@ class TaskModelStateNotifier extends StateNotifier<TaskStateModel> {
     );
   }
 
-  addlist(TaskModel model) {
+  addlist(TaskModel model) async {
+    final id = await DBHelper.InsertTaskModel(model: model, table: TABLE_NAME);
+    // final id = await DBHelper.InsertTaskModel(
+    //   model: dummyModel,
+    //   table: TABLE_NAME,
+    // );
+    model.id = id;
     state = state.copyWith(TaskModels: [...state.TaskModels, model]);
+
+    return id;
+  }
+
+  deleteModel(TaskModel model) async {
+    final id = await DBHelper.DeletetaskModelById(
+      id: model.id.toString(),
+      table: TABLE_NAME,
+    );
+    final cp = state.TaskModels;
+    cp.removeWhere((e) => e.id == model.id);
+    state = state.copyWith(TaskModels: cp);
+
+    return id;
   }
 
   isEnd(bool isEnd) {
     state = state.copyWith(isEnd: isEnd);
   }
+
+  Complate() {}
 }
 
 final TaskModelPaginationStateNotifierProvider = StateNotifierProvider<

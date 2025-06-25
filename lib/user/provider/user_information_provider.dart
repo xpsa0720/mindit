@@ -72,10 +72,12 @@ class UserInformationStateNotifier extends StateNotifier<ModelBase> {
 
   CreateNewUserInfo({String? name}) {
     state = UserInformation(
-      name: name == null ? "" : name,
+      name: name ?? "",
       sequenceDay: 0,
       allClearDays: [],
       tasks: taskModel,
     );
+    SaveUserInfo();
+    InitInfo();
   }
 }

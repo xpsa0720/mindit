@@ -15,6 +15,8 @@ import '../../user/provider/prefs_provider.dart';
 import '../../user/provider/screen_on_service_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
+  static String get routeFullPath => '/splash';
+  static String get routePath => 'splash';
   const SplashScreen({super.key});
 
   @override
@@ -29,8 +31,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    InitDB();
-    InitUserInfo();
+    Init();
+  }
+
+  Init() async {
+    await InitDB(InitFunction: InitUserInfo);
   }
 
   InitUserInfo() async {
@@ -43,23 +48,28 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     });
   }
 
-  InitDB() async {
+  InitDB({Function? InitFunction}) async {
     await ref.read(dbProvider.notifier).InitDB();
+    if (InitFunction != null) {
+      InitFunction();
+    }
     setState(() {
       InitDBLoading = true;
     });
   }
 
   checkData() {
-    context.go(DashBoardScreen.routePath);
+    print("CheckData 호출");
+    context.go(DashBoardScreen.routeFullPath);
   }
 
   @override
   Widget build(BuildContext context) {
     if (InitDBLoading && InitUserLoading) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) => checkData());
+      WidgetsBinding.instance.addPostFrameCallback((_) => checkData());
     }
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Container(
         width: double.infinity,
         height: double.infinity,

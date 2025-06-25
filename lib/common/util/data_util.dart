@@ -2,10 +2,15 @@ import 'dart:ui';
 
 import 'package:mindit/common/data/data.dart';
 import 'package:mindit/task/model/day_of_week_model.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class DataUtils {
   static Color intToColor(int int_Color) {
     return Color(0xFF000000 + int_Color);
+  }
+
+  static bool containsSameDay(List<DateTime> dateList, DateTime targetDay) {
+    return dateList.any((d) => isSameDay(d, targetDay));
   }
 
   static List<DayOfWeek> generateDayOfWeekList(List<bool> list) {

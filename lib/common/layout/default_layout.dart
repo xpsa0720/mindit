@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mindit/common/component/logo_component.dart';
 
 import '../data/color.dart';
@@ -7,6 +8,7 @@ class DefaultLayout extends StatelessWidget {
   final Widget child;
   final TabBar tabBar;
   final String? titile;
+
   const DefaultLayout({
     super.key,
     required this.child,
@@ -17,6 +19,7 @@ class DefaultLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: renderAppBar(),
       body: Column(children: [Expanded(child: child)]),
       backgroundColor: BACKGROUND_COLOR,

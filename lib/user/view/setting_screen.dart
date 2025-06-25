@@ -11,7 +11,9 @@ import '../model/user_information.dart';
 
 class SettingScreen extends ConsumerStatefulWidget {
   const SettingScreen({super.key});
-  static String get routePath => '/setting';
+  static String get routeFullPath => '/setting';
+
+  static String get routePath => 'setting';
 
   @override
   ConsumerState<SettingScreen> createState() => _SettingScreenState();

@@ -13,7 +13,10 @@ import '../../task/util/dummy_data.dart';
 
 class DetailScreen extends ConsumerStatefulWidget {
   const DetailScreen({super.key});
-  static String get routePath => '/detail';
+
+  static String get routeFullPath => '/detail';
+
+  static String get routePath => 'detail';
   @override
   ConsumerState<DetailScreen> createState() => _DetailScreenState();
 }

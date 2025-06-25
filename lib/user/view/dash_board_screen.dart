@@ -5,10 +5,12 @@ import 'package:mindit/common/component/end_card_component.dart';
 import 'package:mindit/common/component/render_loading_component.dart';
 import 'package:mindit/common/component/text_component.dart';
 import 'package:mindit/sqlite/model/base_model.dart';
+import 'package:mindit/task/model/task_checkbox_model.dart';
 import 'package:mindit/task/provider/task_model_provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../common/component/button_component.dart';
 import '../../common/component/calendar_component.dart';
+import '../../common/component/check_dialog_component.dart';
 import '../../common/component/dialog_component.dart';
 import '../../common/component/list_component.dart';
 import '../../common/component/text_filed_component.dart';
@@ -16,7 +18,8 @@ import '../../common/model/pagination_model.dart';
 import '../provider/user_information_provider.dart';
 
 class DashBoardScreen extends ConsumerStatefulWidget {
-  static String get routePath => '/dashboard';
+  static String get routeFullPath => '/dashboard';
+  static String get routePath => 'dashboard';
 
   const DashBoardScreen({super.key});
 
@@ -27,8 +30,8 @@ class DashBoardScreen extends ConsumerStatefulWidget {
 class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
-  final List<AnimationController> checkController_list = [];
-  final List<Animation<double>> animation_list = [];
+  // final List<AnimationController> checkController_list = [];
+  // final List<Animation<double>> animation_list = [];
   bool requestName = false;
   late ScrollController scrollController;
   ControllerListener() async {
@@ -72,24 +75,25 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
     super.build(context);
     final state = ref.watch(TaskModelPaginationStateNotifierProvider);
     final cp = ref.watch(TaskModelStateNotifierProvider);
+    final List<TaskCheckBoxModel> taskCheckBoxModelList = [];
 
     if (requestName) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final TextEditingController textEditingController =
             TextEditingController();
         GetNameDialogComponent(
-          context,
-          textEditingController,
-          () {
-            ref
-                .read(UserInformationStateNotifierProvider.notifier)
-                .CreateNewUserInfo(name: textEditingController.text);
-            Navigator.pop(context);
-          },
-          () {
+          context: context,
+          textController: textEditingController,
+          No_function: () {
             ref
                 .read(UserInformationStateNotifierProvider.notifier)
                 .CreateNewUserInfo();
+            Navigator.pop(context);
+          },
+          OK_function: () {
+            ref
+                .read(UserInformationStateNotifierProvider.notifier)
+                .CreateNewUserInfo(name: textEditingController.text);
             Navigator.pop(context);
           },
         );
@@ -119,19 +123,21 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
       );
     }
 
-    List.generate(cp.TaskModels.length - checkController_list.length, (index) {
+    List.generate(cp.TaskModels.length - taskCheckBoxModelList.length, (index) {
       // final standardIndex = checkController_list.length;
-      checkController_list.add(
-        AnimationController(
-          vsync: this,
-          duration: const Duration(milliseconds: 300),
-        ),
+      final checkController = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 300),
       );
-      animation_list.add(
-        Tween<double>(begin: 0, end: 1).animate(
-          CurvedAnimation(
-            parent: checkController_list.last,
-            curve: Curves.easeInOutCirc,
+      taskCheckBoxModelList.add(
+        TaskCheckBoxModel(
+          model: cp.TaskModels[index],
+          checkController: checkController,
+          animation: Tween<double>(begin: 0, end: 1).animate(
+            CurvedAnimation(
+              parent: checkController,
+              curve: Curves.easeInOutCirc,
+            ),
           ),
         ),
       );
@@ -193,12 +199,13 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
                           }
                           if (index == cp.TaskModels.length)
                             return cp.isEnd
-                                ? ComplateCard()
+                                ? Text('')
                                 : RenderLoadingComponent();
                           return ListComponent(
-                            model: cp.TaskModels[index],
-                            animation: animation_list[index],
-                            checkController: checkController_list[index],
+                            model: taskCheckBoxModelList[index].model,
+                            animation: taskCheckBoxModelList[index].animation,
+                            checkController:
+                                taskCheckBoxModelList[index].checkController,
                           );
                         },
                         separatorBuilder: (context, index) {
@@ -216,17 +223,29 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
     );
   }
 
-  ComplateCard() {
-    return GestureDetector(
-      onTap: () {},
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 10.0),
-        child: BoxComponent(
-          shadow: false,
-          height: 50,
-          child: Center(child: TextComponent(text: '완료')),
-        ),
-      ),
-    );
-  }
+  // ComplateCard() {
+  //   return GestureDetector(
+  //     onTap: () {
+  //       CheckDialogComponent(
+  //          context: context,
+  //         No_function: ,
+  //         () {
+  //           Navigator.pop(context);
+  //         },
+  //         () {
+  //           Navigator.pop(context);
+  //           // Complate();
+  //         },
+  //       );
+  //     },
+  //     child: Padding(
+  //       padding: const EdgeInsets.only(bottom: 10.0),
+  //       child: BoxComponent(
+  //         shadow: false,
+  //         height: 50,
+  //         child: Center(child: TextComponent(text: '완료')),
+  //       ),
+  //     ),
+  //   );
+  // }
 }

@@ -17,9 +17,9 @@ import '../provider/prefs_provider.dart';
 
 class DataPlusScreen extends ConsumerStatefulWidget {
   const DataPlusScreen({super.key});
+  static String get routeFullPath => '/plus';
 
-
-  static String get routePath => '/plus';
+  static String get routePath => 'plus';
 
   @override
   ConsumerState<DataPlusScreen> createState() => _DataPlusScreenState();
@@ -27,7 +27,6 @@ class DataPlusScreen extends ConsumerStatefulWidget {
 
 class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
     with AutomaticKeepAliveClientMixin {
-
   bool get wantKeepAlive => true;
 
   List<String> DayOfWeek_list = ['월', '화', '수', '목', '금', '토', '일'];
@@ -117,7 +116,6 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
       setState(() {});
     }
 
-    final state = ref.watch(dbHelperProvider);
     final task_provider = ref.read(TaskModelStateNotifierProvider.notifier);
     final model = TaskModel(
       title: titleController.text,
@@ -127,11 +125,9 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
       descriptor: descriptorController.text,
       mainColor: PASTEL_COLORS_INT[seletedColor].toString(),
     );
-    final id = await state.InsertTaskModel(model: model, table: TABLE_NAME);
-    model.id = id;
-    print(model.id);
-    task_provider.addlist(model);
-    return id;
+
+    final return_id = task_provider.addlist(model);
+    return return_id;
   }
 
   ColorWidget() {
