@@ -63,9 +63,8 @@ final TaskModelPaginationStateNotifierProvider = StateNotifierProvider<
   TaskModelCursorPaginationStateNotifier,
   Pagination
 >((ref) {
-  final dbHelper = ref.watch(dbHelperProvider);
+  final dbHelper = ref.watch(dbHelperProvider) as DbHelper;
   final taskModel_notifier = ref.watch(TaskModelStateNotifierProvider.notifier);
-  print('state 초기화');
   return TaskModelCursorPaginationStateNotifier(
     DBHelper: dbHelper,
     taskModel_notifier: taskModel_notifier,
@@ -91,7 +90,7 @@ class TaskModelCursorPaginationStateNotifier extends StateNotifier<Pagination> {
     }
     try {
       state = PaginationMore();
-      await Future.delayed(Duration(seconds: 2));
+      // await Future.delayed(Duration(seconds: 2));
       final new_models = await DBHelper.QueryCusorTaskModelById(
         table: TABLE_NAME,
         count: count,

@@ -28,13 +28,12 @@ class SettingStateNotifier extends StateNotifier<ModelBase> {
         final json = await prefs!.getString('setting');
         if (json == null) {
           print("Setting 파일 생성");
-          state = SettingModel(allowAlarm: false, allowScreenOnScreen: true);
+          state = SettingModel(allowScreenOnScreen: true);
           await SaveSetting();
           return;
         }
         final model = SettingModel.CustomfromJson(jsonDecode(json!));
         state = model;
-        print(model.allowAlarm);
         print(model.allowScreenOnScreen);
       } else {
         state = ModelError(message: 'setting 정보가 없습니다2');

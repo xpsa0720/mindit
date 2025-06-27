@@ -19,7 +19,7 @@ class UserInformation extends ModelBase {
   factory UserInformation.CustomfromJson(Map<String, dynamic> json) {
     return UserInformation(
       name: json['name'] as String,
-      sequenceDay: (json['sequenceDay'] as num).toInt(),
+      sequenceDay: json['sequenceDay'] as int,
       allClearDays:
           (json['allClearDays'] as List<dynamic>?)
               ?.map((e) => DateTime.parse(e as String))
@@ -36,7 +36,7 @@ class UserInformation extends ModelBase {
   Map<String, dynamic> CustomtoJson() => {
     'name': name,
     'sequenceDay': sequenceDay,
-    'allClearDays': allClearDays,
+    'allClearDays': allClearDays.map((e) => e.toString()).toList(),
   };
 
   copyWith({

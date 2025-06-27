@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindit/common/component/Box_component.dart';
 import 'package:mindit/common/component/button_component.dart';
+import 'package:mindit/user/provider/setting_provider.dart';
 import 'package:mindit/user/provider/user_information_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../../common/component/text_component.dart';
 import '../../common/component/text_filed_component.dart';
+import '../model/setting_model.dart';
 import '../model/user_information.dart';
 
 class SettingScreen extends ConsumerStatefulWidget {
@@ -22,12 +24,11 @@ class SettingScreen extends ConsumerStatefulWidget {
 class _SettingScreenState extends ConsumerState<SettingScreen>
     with AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
-
+  bool LockScreenButton = false;
   final TextEditingController textEditingController = TextEditingController();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -41,28 +42,30 @@ class _SettingScreenState extends ConsumerState<SettingScreen>
       print(cp.name);
       textEditingController.text = cp.name;
     }
-    return Column(
-      children: [
-        BoxComponent(
-          width: double.infinity,
-          height: 600,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(children: [TextComponent(text: '이름')]),
-                SizedBox(height: 10),
-                textWidget(),
-                SizedBox(height: 15),
-                AlramWidget(),
-                SizedBox(height: 15),
+    return SizedBox(
+      height: 1500,
+      child: ListView(
+        scrollDirection: Axis.vertical,
+        children: [
+          BoxComponent(
+            width: double.infinity,
+            height: 600,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Row(children: [TextComponent(text: '이름')]),
+                  SizedBox(height: 10),
+                  textWidget(),
+                  SizedBox(height: 15),
 
-                ScreenOnServiceWidget(),
-              ],
+                  ScreenOnServiceWidget(),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -79,22 +82,22 @@ class _SettingScreenState extends ConsumerState<SettingScreen>
     );
   }
 
-  AlramWidget() {
-    return Row(
-      children: [
-        TextComponent(text: "모든 알림 허용"),
-        ButtonComponent(enableColor: true, callback: () {}, text: "예"),
-        ButtonComponent(enableColor: true, callback: () {}, text: "아니요"),
-      ],
-    );
-  }
-
   ScreenOnServiceWidget() {
+    final state = ref.watch(setting_provider) as SettingModel;
+    if (state.allowScreenOnScreen) LockScreenButton = true;
     return Row(
       children: [
         TextComponent(text: "잠금 화면 표시"),
-        ButtonComponent(enableColor: true, callback: () {}, text: "예"),
-        ButtonComponent(enableColor: true, callback: () {}, text: "아니요"),
+        ButtonComponent(
+          enableColor: LockScreenButton,
+          callback: () {},
+          text: "예",
+        ),
+        ButtonComponent(
+          enableColor: !LockScreenButton,
+          callback: () {},
+          text: "아니요",
+        ),
       ],
     );
   }

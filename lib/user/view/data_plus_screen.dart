@@ -42,52 +42,53 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Column(
-      children: [
-        BoxComponent(
-          width: double.infinity,
+    return SizedBox(
+      height: 900,
+      child: ListView(
+        children: [
+          BoxComponent(
+            width: double.infinity,
 
-          padding: EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Row(children: [TextComponent(text: '실천 내용')]),
-              Padding(
-                padding: const EdgeInsets.only(top: 5, right: 20),
-                child: TextFiledComponent(
-                  textEditingController: titleController,
+            padding: EdgeInsets.all(12),
+            child: Column(
+              children: [
+                Row(children: [TextComponent(text: '실천 내용')]),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5, right: 20),
+                  child: TextFiledComponent(
+                    textEditingController: titleController,
+                  ),
                 ),
-              ),
-              TextComponent(
-                text: '*내용을 입력해 주세요!*',
-                color: errorTitle ? Colors.red : Colors.transparent,
-              ),
-              SizedBox(height: 10),
-              Row(children: [TextComponent(text: '실천 설명')]),
-              Padding(
-                padding: const EdgeInsets.only(top: 5, right: 20),
-                child: TextFiledComponent(
-                  textEditingController: descriptorController,
+                TextComponent(
+                  text: '*내용을 입력해 주세요!*',
+                  color: errorTitle ? Colors.red : Colors.transparent,
                 ),
-              ),
-              SizedBox(height: 32),
-              SelectDayWidget(),
-              SelectWeekDayWidget(),
-              TextComponent(
-                text: '*활동 날짜를 설정해 주세요!*',
-                color: errorDayOfWeek ? Colors.red : Colors.transparent,
-              ),
+                SizedBox(height: 10),
+                Row(children: [TextComponent(text: '실천 설명')]),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5, right: 20),
+                  child: TextFiledComponent(
+                    textEditingController: descriptorController,
+                  ),
+                ),
+                SizedBox(height: 32),
+                SelectDayWidget(),
+                SelectWeekDayWidget(),
+                TextComponent(
+                  text: '*활동 날짜를 설정해 주세요!*',
+                  color: errorDayOfWeek ? Colors.red : Colors.transparent,
+                ),
 
-              SizedBox(height: 0),
-              AleramWidget(),
-              SizedBox(height: 32),
-              ColorWidget(),
-              SizedBox(height: 16),
+                SizedBox(height: 16),
+                ColorWidget(),
+                SizedBox(height: 16),
 
-              CreateButton(text: '생성', callback: CreateTaskModel),
-            ],
+                CreateButton(text: '생성', callback: CreateTaskModel),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -125,9 +126,20 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
       descriptor: descriptorController.text,
       mainColor: PASTEL_COLORS_INT[seletedColor].toString(),
     );
-
+    InitContent();
     final return_id = task_provider.addlist(model);
     return return_id;
+  }
+
+  InitContent() {
+    titleController.text = "";
+    descriptorController.text = "";
+    DayOfWeek_bool_list = List.generate(7, (index) => false);
+    isenableYesButton = false;
+    isenableNoButton = true;
+    seletedColor = 0;
+    errorDayOfWeek = false;
+    errorTitle = false;
   }
 
   ColorWidget() {

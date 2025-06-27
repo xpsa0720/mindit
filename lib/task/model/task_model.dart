@@ -17,10 +17,10 @@ class TaskModel extends ModelBase {
   final String descriptor;
   final String mainColor;
 
+  DateTime createTime;
   List<DateTime> clearDay;
   double implementationRate;
   int sequenceDay;
-  bool isAlarm;
 
   TaskModel({
     this.id = -1,
@@ -30,9 +30,10 @@ class TaskModel extends ModelBase {
     required this.mainColor,
     this.implementationRate = 0,
     this.sequenceDay = 0,
-    this.isAlarm = false,
     List<DateTime>? clearDay,
-  }) : clearDay = clearDay ?? [];
+    DateTime? createTime,
+  }) : clearDay = clearDay ?? [],
+       createTime = createTime ?? DateTime.now();
 
   factory TaskModel.fromJson(Map<String, dynamic> json) =>
       _$TaskModelFromJson(json);
@@ -66,8 +67,8 @@ class TaskModel extends ModelBase {
       mainColor: json['mainColor'],
       implementationRate: json['implementationRate'],
       sequenceDay: json['sequenceDay'],
-      isAlarm: json['isAlarm'] == '1' ? true : false,
       clearDay: clearDay,
+      createTime: DateTime.parse(json['createTime']),
     );
   }
 
@@ -79,8 +80,8 @@ class TaskModel extends ModelBase {
       'mainColor': mainColor.toString(),
       'implementationRate': implementationRate.toString(),
       'sequenceDay': sequenceDay.toString(),
-      'isAlarm': isAlarm ? '1' : '0',
       'clearDay': clearDay.map((e) => e.toString()).join(';'),
+      'createTime': createTime.toString(),
     };
   }
 

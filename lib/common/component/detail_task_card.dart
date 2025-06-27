@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mindit/common/component/calendar_component.dart';
 import 'package:mindit/common/component/one_task_calendar_component.dart';
 import 'package:mindit/common/component/text_component.dart';
+import 'package:mindit/common/data/color.dart';
 import 'package:mindit/task/model/task_model.dart';
 import 'package:mindit/user/view/detail_in_detail_screen.dart';
 
@@ -15,6 +16,7 @@ import 'delete_button.dart';
 
 class DetailTaskCard extends ConsumerStatefulWidget {
   final TaskModel DBdata;
+
   const DetailTaskCard({super.key, required this.DBdata});
 
   @override
@@ -23,13 +25,31 @@ class DetailTaskCard extends ConsumerStatefulWidget {
 
 class _DetailTaskCardState extends ConsumerState<DetailTaskCard> {
   bool detailMode = false;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(onTap: () {}, child: mainBox());
   }
 
   mainBox() {
+    bool perfect = false;
+
+    int notWorkingDayCount =
+        DataUtils.getSpecificWeekdayBetween(
+          start: widget.DBdata.createTime,
+          end: DateTime.now().subtract(Duration(days: 1)),
+          weekdays: DataUtils.weekDayToInt(
+            WeekDayModel: widget.DBdata.dayOfWeekModel,
+          ),
+        ).length -
+        widget.DBdata.clearDay.length;
     print(int.parse(widget.DBdata.mainColor).toRadixString(16));
+
+    if (notWorkingDayCount == 0) {
+      perfect = true;
+    }
+
+    final inDays = DateTime.now().difference(widget.DBdata.createTime).inDays;
     return BoxComponent(
       // height: 125,
       boxDecoration: BoxDecoration(
@@ -76,7 +96,9 @@ class _DetailTaskCardState extends ConsumerState<DetailTaskCard> {
                 ),
               ),
               body(
-                '연속 ${widget.DBdata.sequenceDay}일 달성 - 실천율: ${widget.DBdata.implementationRate.toStringAsFixed(1)}%',
+                day: widget.DBdata.sequenceDay,
+                percent: widget.DBdata.implementationRate,
+                perfect: perfect,
               ),
             ],
           ),
@@ -84,29 +106,65 @@ class _DetailTaskCardState extends ConsumerState<DetailTaskCard> {
             SizedBox(height: 10),
             OneTaskCalendarComponent(taskModel: widget.DBdata),
             SizedBox(height: 10),
-            Row(children: [TextComponent(text: '실천 시작 시각: ')]),
-            SizedBox(height: 5),
             Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                TextComponent(
-                  text: '실천 일 수: ${widget.DBdata.clearDay.length}일',
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextComponent(text: '실천 시작 시각:'),
+                    SizedBox(height: 5),
+                    TextComponent(text: '시작 부터 지금까지:'),
+                    SizedBox(height: 5),
+                    TextComponent(text: '실천한 일 수:'),
+                    SizedBox(height: 5),
+                    TextComponent(text: '실천하지 못한 일 수:'),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    TextComponent(
+                      text:
+                          '${widget.DBdata.createTime.year}년 ${widget.DBdata.createTime.month}월 ${widget.DBdata.createTime.day}일',
+                    ),
+                    SizedBox(height: 5),
+                    TextComponent(text: '${inDays}일'),
+                    SizedBox(height: 5),
+                    PerfectDay(
+                      text: '일',
+                      day: widget.DBdata.clearDay.length,
+                      perfect: perfect,
+                    ),
+                    SizedBox(height: 5),
+                    PerfectDay(
+                      text: '일',
+                      day: notWorkingDayCount,
+                      perfect: perfect,
+                    ),
+                  ],
                 ),
               ],
             ),
-            SizedBox(height: 5),
-            Row(
-              children: [
-                TextComponent(
-                  text: '실천하지 못한 일 수: ${widget.DBdata.clearDay.length}일',
-                ),
-              ],
-            ),
+
             SizedBox(height: 40),
             DeleteButton(callback: DeleteModel, text: '삭제'),
             // TextComponent(text: '실천 못한 일 수: ${}'),
           ],
         ),
       ),
+    );
+  }
+
+  PerfectDay({required bool perfect, required String text, required int day}) {
+    return Row(
+      children: [
+        TextComponent(
+          text: day.toString(),
+          color: perfect == true ? Colors.green : Colors.black,
+        ),
+        TextComponent(text: text),
+      ],
     );
   }
 
@@ -164,10 +222,51 @@ class _DetailTaskCardState extends ConsumerState<DetailTaskCard> {
     );
   }
 
-  body(String text) {
+  body({required int day, required bool perfect, required double percent}) {
     return Row(
       children: [
-        Text(text, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 22)),
+        SizedBox(
+          height: 50,
+          width: 300,
+          child: ListView(
+            key: PageStorageKey('body'),
+            scrollDirection: Axis.horizontal,
+            children: [
+              Text(
+                '연속 ',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 21,
+                  color: Colors.black,
+                ),
+              ),
+              Text(
+                day.toString(),
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 21,
+                  color: perfect ? Colors.green : Colors.black,
+                ),
+              ),
+              Text(
+                '일 달성 - 실천율: ',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 21,
+                  color: Colors.black,
+                ),
+              ),
+              Text(
+                percent.toString() + "%",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 21,
+                  color: perfect ? Colors.green : Colors.black,
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }

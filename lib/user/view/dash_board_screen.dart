@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindit/common/component/box_component.dart';
+import 'package:mindit/common/component/dash_board_box_component.dart';
 import 'package:mindit/common/component/end_card_component.dart';
 import 'package:mindit/common/component/render_loading_component.dart';
 import 'package:mindit/common/component/text_component.dart';
 import 'package:mindit/sqlite/model/base_model.dart';
 import 'package:mindit/task/model/task_checkbox_model.dart';
 import 'package:mindit/task/provider/task_model_provider.dart';
+import 'package:mindit/user/model/user_information.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../common/component/button_component.dart';
 import '../../common/component/calendar_component.dart';
@@ -45,9 +47,9 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
 
   UserInfoCheck() async {
     final user = ref.read(UserInformationStateNotifierProvider);
-    if (user is ModelError) {
-      print(user.message);
-      if (user.jsonNull == true) {
+    if (user is UserInformation) {
+      print(user.name);
+      if (user.name == "") {
         requestName = true;
       }
     }
@@ -154,17 +156,7 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
         ),
         Row(
           children: [
-            Expanded(
-              flex: 5,
-
-              child: BoxComponent(
-                height: 300,
-                child: Text(
-                  '연속 5일 퍼펙트!!',
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700),
-                ),
-              ),
-            ),
+            Expanded(flex: 5, child: DashBoardBoxComponent()),
 
             Expanded(
               flex: 7,
@@ -197,10 +189,14 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
                               child: ListComponent(),
                             );
                           }
+                          if (cp.TaskModels.isEmpty) return EndCardComponent();
+                          // return TextComponent(text: '할일이?');
+
                           if (index == cp.TaskModels.length)
                             return cp.isEnd
                                 ? Text('')
                                 : RenderLoadingComponent();
+
                           return ListComponent(
                             model: taskCheckBoxModelList[index].model,
                             animation: taskCheckBoxModelList[index].animation,
@@ -222,30 +218,4 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
       ],
     );
   }
-
-  // ComplateCard() {
-  //   return GestureDetector(
-  //     onTap: () {
-  //       CheckDialogComponent(
-  //          context: context,
-  //         No_function: ,
-  //         () {
-  //           Navigator.pop(context);
-  //         },
-  //         () {
-  //           Navigator.pop(context);
-  //           // Complate();
-  //         },
-  //       );
-  //     },
-  //     child: Padding(
-  //       padding: const EdgeInsets.only(bottom: 10.0),
-  //       child: BoxComponent(
-  //         shadow: false,
-  //         height: 50,
-  //         child: Center(child: TextComponent(text: '완료')),
-  //       ),
-  //     ),
-  //   );
-  // }
 }

@@ -16,10 +16,12 @@ TaskModel _$TaskModelFromJson(Map<String, dynamic> json) => TaskModel(
   mainColor: json['mainColor'] as String,
   implementationRate: (json['implementationRate'] as num?)?.toDouble() ?? 0,
   sequenceDay: (json['sequenceDay'] as num?)?.toInt() ?? 0,
-  isAlarm: json['isAlarm'] as bool? ?? false,
   clearDay: (json['clearDay'] as List<dynamic>?)
       ?.map((e) => DateTime.parse(e as String))
       .toList(),
+  createTime: json['createTime'] == null
+      ? null
+      : DateTime.parse(json['createTime'] as String),
 );
 
 Map<String, dynamic> _$TaskModelToJson(TaskModel instance) => <String, dynamic>{
@@ -28,8 +30,8 @@ Map<String, dynamic> _$TaskModelToJson(TaskModel instance) => <String, dynamic>{
   'dayOfWeekModel': instance.dayOfWeekModel,
   'descriptor': instance.descriptor,
   'mainColor': instance.mainColor,
+  'createTime': instance.createTime.toIso8601String(),
   'clearDay': instance.clearDay.map((e) => e.toIso8601String()).toList(),
   'implementationRate': instance.implementationRate,
   'sequenceDay': instance.sequenceDay,
-  'isAlarm': instance.isAlarm,
 };

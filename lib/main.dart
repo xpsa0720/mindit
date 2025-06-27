@@ -32,5 +32,5 @@ class _App extends StatelessWidget {
 @pragma("vm:entry-point")
 void ScreenOnFlutterMain() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MaterialApp(home: ScreenOnScreen()));
+  runApp(ProviderScope(child: MaterialApp(home: ScreenOnScreen())));
 }

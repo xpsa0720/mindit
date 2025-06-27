@@ -19,7 +19,7 @@ class DefaultLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      // resizeToAvoidBottomInset: true,
       appBar: renderAppBar(),
       body: Column(children: [Expanded(child: child)]),
       backgroundColor: BACKGROUND_COLOR,

@@ -1,9 +1,11 @@
+import 'package:mindit/sqlite/model/base_model.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../common/data/data.dart';
 import '../../task/model/task_model.dart';
 import '../../task/model/task_state_model.dart';
 
-class DbHelper {
+class DbHelper extends ModelBase {
   final Database db;
   int start_id = 0;
   int end_id = 0;
@@ -23,8 +25,8 @@ class DbHelper {
         'mainColor',
         'implementationRate',
         'sequenceDay',
-        'isAlarm',
         'clearDay',
+        'createTime',
       ],
       where: 'id = ?',
       whereArgs: [id],
@@ -47,8 +49,8 @@ class DbHelper {
         'mainColor',
         'implementationRate',
         'sequenceDay',
-        'isAlarm',
         'clearDay',
+        'createTime',
       ],
       where: 'id >= ? AND id <= ?',
       whereArgs: [start_id, end_id],
@@ -76,8 +78,8 @@ class DbHelper {
         'mainColor',
         'implementationRate',
         'sequenceDay',
-        'isAlarm',
         'clearDay',
+        'createTime',
       ],
     );
 
@@ -87,6 +89,34 @@ class DbHelper {
       result_list.add(TaskModel.fromMap(i));
     }
 
+    return result_list;
+  }
+
+  Future<List<TaskModel>> GetTodayTaskList({required String table}) async {
+    DateTime now = DateTime.now();
+    final weekday = All_DayOfWeek_list[now.weekday - 1];
+    final result = await db.query(
+      table,
+      columns: [
+        'id',
+        'title',
+        'dayOfWeekModel',
+        'descriptor',
+        'mainColor',
+        'implementationRate',
+        'sequenceDay',
+        'clearDay',
+        'createTime',
+      ],
+    );
+
+    List<TaskModel> result_list = [];
+
+    for (final i in result) {
+      final data = TaskModel.fromMap(i);
+      if (data.dayOfWeekModel.dayOfWeek.contains(weekday))
+        result_list.add(data);
+    }
     return result_list;
   }
 

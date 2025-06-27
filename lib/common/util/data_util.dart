@@ -1,10 +1,54 @@
+import 'dart:io';
 import 'dart:ui';
 
+import 'package:intl/intl.dart';
 import 'package:mindit/common/data/data.dart';
 import 'package:mindit/task/model/day_of_week_model.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class DataUtils {
+  static List<int> weekDayToInt({required DayOfWeekModel WeekDayModel}) {
+    final List<int> result = [];
+    for (final v in WeekDayModel.dayOfWeek) {
+      switch (v) {
+        case DayOfWeek.Mon:
+          result.add(1);
+        case DayOfWeek.Tue:
+          result.add(2);
+        case DayOfWeek.Wed:
+          result.add(3);
+        case DayOfWeek.Thu:
+          result.add(4);
+        case DayOfWeek.Fri:
+          result.add(5);
+        case DayOfWeek.Sat:
+          result.add(6);
+        case DayOfWeek.Sun:
+          result.add(7);
+      }
+    }
+    return result;
+  }
+
+  static List<DateTime> getSpecificWeekdayBetween({
+    required DateTime start,
+    required DateTime end,
+    required List<int> weekdays,
+  }) {
+    List<DateTime> result = [];
+
+    for (
+      DateTime date = start;
+      !date.isAfter(end);
+      date = date.add(Duration(days: 1))
+    ) {
+      if (weekdays.contains(date.weekday)) {
+        result.add(date);
+      }
+    }
+    return result;
+  }
+
   static Color intToColor(int int_Color) {
     return Color(0xFF000000 + int_Color);
   }
@@ -102,5 +146,16 @@ class DataUtils {
       }
     }
     return model;
+  }
+
+  static Future<File> getTodayTempFile(Directory path) async {
+    final now = DateTime.now();
+    final file = File(
+      '${path.path}/${DateFormat('yyyy-MM-dd').format(now)}.json',
+    );
+    if (!(await file.exists())) {
+      await file.create();
+    }
+    return file;
   }
 }

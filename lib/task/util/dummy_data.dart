@@ -73,10 +73,7 @@ final dummyModel = TaskModel(
   descriptor: '',
   mainColor: pastelGrayHex.toString(),
   implementationRate: 42.2,
-  sequenceDay: 10,
-  clearDay: [
-    DateTime(2025, 6, 21),
-    DateTime(2025, 6, 22),
-    DateTime(2025, 6, 24),
-  ],
+  sequenceDay: 1,
+  clearDay: [DateTime(2025, 6, 24)],
+  createTime: DateTime(2025, 6, 24),
 );

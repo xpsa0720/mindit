@@ -1,27 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mindit/sqlite/model/base_model.dart';
+import 'package:mindit/user/model/user_information.dart';
+import 'package:mindit/user/provider/user_information_provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class CalendarComponent extends StatefulWidget {
+import '../data/color.dart';
+import '../util/data_util.dart';
+
+class CalendarComponent extends ConsumerStatefulWidget {
   const CalendarComponent({super.key});
 
   @override
-  State<CalendarComponent> createState() => _CalendarComponentState();
+  ConsumerState<CalendarComponent> createState() => _CalendarComponentState();
 }
 
-class _CalendarComponentState extends State<CalendarComponent> {
+class _CalendarComponentState extends ConsumerState<CalendarComponent> {
   DateTime focuseDay = DateTime.now();
   DateTime? selectedDay = DateTime.now();
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(UserInformationStateNotifierProvider);
+    if (state is ModelLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+    if (state is ModelError) {
+      print((state as ModelError).message);
+      return Center(child: CircularProgressIndicator());
+    }
+    final cp = state as UserInformation;
     return TableCalendar(
       availableGestures: AvailableGestures.none,
-
       key: PageStorageKey('calendar'),
       firstDay: DateTime.utc(2000, 10, 16),
       lastDay: DateTime.utc(2060, 3, 14),
       focusedDay: focuseDay,
 
       //--------------------------------
+      holidayPredicate:
+          (day) => DataUtils.containsSameDay(cp.allClearDays, day),
+
+      calendarBuilders: CalendarBuilders(
+        holidayBuilder: (context, day, focusedDay) {
+          return Center(
+            child: Container(
+              width: 35,
+              height: 35,
+              decoration: BoxDecoration(
+                color: CLEAR_COLOR,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  '${day.day}',
+                  style: TextStyle(color: Colors.white, fontSize: 17),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+
       onPageChanged: (focusedDay) {
         this.focuseDay = focusedDay;
       },
