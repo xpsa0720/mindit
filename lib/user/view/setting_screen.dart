@@ -4,12 +4,11 @@ import 'package:mindit/common/component/Box_component.dart';
 import 'package:mindit/common/component/button_component.dart';
 import 'package:mindit/user/provider/setting_provider.dart';
 import 'package:mindit/user/provider/user_information_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 import '../../common/component/text_component.dart';
 import '../../common/component/text_filed_component.dart';
 import '../model/setting_model.dart';
 import '../model/user_information.dart';
+import '../provider/screen_on_service_provider.dart';
 
 class SettingScreen extends ConsumerStatefulWidget {
   const SettingScreen({super.key});
@@ -36,10 +35,8 @@ class _SettingScreenState extends ConsumerState<SettingScreen>
   Widget build(BuildContext context) {
     super.build(context);
     final state = ref.watch(UserInformationStateNotifierProvider);
-    print("셋팅 호출: $state");
     if (state is UserInformation) {
       final cp = state as UserInformation;
-      print(cp.name);
       textEditingController.text = cp.name;
     }
     return SizedBox(
@@ -48,6 +45,7 @@ class _SettingScreenState extends ConsumerState<SettingScreen>
         scrollDirection: Axis.vertical,
         children: [
           BoxComponent(
+            boaderPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             width: double.infinity,
             height: 600,
             child: Padding(
@@ -58,7 +56,6 @@ class _SettingScreenState extends ConsumerState<SettingScreen>
                   SizedBox(height: 10),
                   textWidget(),
                   SizedBox(height: 15),
-
                   ScreenOnServiceWidget(),
                 ],
               ),
@@ -84,18 +81,23 @@ class _SettingScreenState extends ConsumerState<SettingScreen>
 
   ScreenOnServiceWidget() {
     final state = ref.watch(setting_provider) as SettingModel;
-    if (state.allowScreenOnScreen) LockScreenButton = true;
     return Row(
       children: [
         TextComponent(text: "잠금 화면 표시"),
         ButtonComponent(
-          enableColor: LockScreenButton,
-          callback: () {},
+          enableColor: state.allowScreenOnScreen,
+          callback: () async {
+            await ref.read(setting_provider.notifier).ChangeLockScreen(true);
+            await ref.read(screenServiceProvider.notifier).updateSetting();
+          },
           text: "예",
         ),
         ButtonComponent(
-          enableColor: !LockScreenButton,
-          callback: () {},
+          enableColor: !state.allowScreenOnScreen,
+          callback: () async {
+            await ref.read(setting_provider.notifier).ChangeLockScreen(false);
+            await ref.read(screenServiceProvider.notifier).updateSetting();
+          },
           text: "아니요",
         ),
       ],

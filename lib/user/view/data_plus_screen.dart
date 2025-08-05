@@ -5,15 +5,11 @@ import 'package:mindit/common/util/data_util.dart';
 import 'package:mindit/task/model/day_of_week_model.dart';
 import 'package:mindit/task/model/task_model.dart';
 import 'package:mindit/task/provider/task_model_provider.dart';
-import 'package:mindit/user/provider/user_information_provider.dart';
+import 'package:mindit/user/provider/foreground_provider.dart';
 
 import '../../common/component/text_component.dart';
 import '../../common/component/text_filed_component.dart';
 import '../../common/data/color.dart';
-import '../../common/data/sqlite.dart';
-import '../../sqlite/provider/db_provider.dart';
-import '../../task/util/dummy_data.dart';
-import '../provider/prefs_provider.dart';
 
 class DataPlusScreen extends ConsumerStatefulWidget {
   const DataPlusScreen({super.key});
@@ -26,7 +22,7 @@ class DataPlusScreen extends ConsumerStatefulWidget {
 }
 
 class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   bool get wantKeepAlive => true;
 
   List<String> DayOfWeek_list = ['월', '화', '수', '목', '금', '토', '일'];
@@ -47,8 +43,8 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
       child: ListView(
         children: [
           BoxComponent(
+            boaderPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 11),
             width: double.infinity,
-
             padding: EdgeInsets.all(12),
             child: Column(
               children: [
@@ -127,6 +123,7 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
       mainColor: PASTEL_COLORS_INT[seletedColor].toString(),
     );
     InitContent();
+    ref.read(ForegroundServiceProvider.notifier).Update();
     final return_id = task_provider.addlist(model);
     return return_id;
   }
@@ -407,32 +404,25 @@ class _DataPlusScreenState extends ConsumerState<DataPlusScreen>
       ),
       child: ElevatedButton(
         onPressed: callback,
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.zero,
+
+          minimumSize: Size(10, 40),
+          backgroundColor: WidgetStateColor.resolveWith((states) {
+            return Colors.transparent;
+          }),
+          shadowColor: Colors.transparent,
+          elevation: 0,
+          overlayColor: WidgetStateColor.resolveWith(
+            (states) => Colors.transparent,
+          ),
+        ),
         child: Text(
           text,
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            fontSize: 20,
+            fontSize: 22,
             color: Colors.black,
-          ),
-        ),
-
-        style: ButtonStyle(
-          padding: WidgetStateProperty.all(EdgeInsets.zero),
-          minimumSize: WidgetStateProperty.resolveWith((states) {
-            return Size(40, 40);
-          }),
-          backgroundColor: WidgetStateColor.resolveWith((states) {
-            return Colors.transparent;
-          }),
-          shadowColor: WidgetStateColor.resolveWith((states) {
-            // if (isEnable) return Color(0x7094fdf8);
-            return Colors.white;
-          }),
-          elevation: WidgetStateProperty.resolveWith((states) {
-            return 0;
-          }),
-          overlayColor: WidgetStateColor.resolveWith(
-            (states) => Colors.transparent,
           ),
         ),
       ),

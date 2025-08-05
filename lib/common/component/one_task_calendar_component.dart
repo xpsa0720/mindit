@@ -19,12 +19,12 @@ class _CalendarComponentState extends State<OneTaskCalendarComponent> {
   @override
   Widget build(BuildContext context) {
     List<DateTime> taskModel_day_list = widget.taskModel.clearDay;
-
+    print("taskModel_day_list: ${taskModel_day_list}");
     return TableCalendar(
       availableGestures: AvailableGestures.none,
       key: PageStorageKey('calendar'),
-      firstDay: DateTime.utc(2000, 10, 16),
-      lastDay: DateTime.utc(2060, 3, 14),
+      firstDay: DateTime(2000, 10, 16),
+      lastDay: DateTime(2060, 3, 14),
       focusedDay: focuseDay,
       holidayPredicate:
           (day) => DataUtils.containsSameDay(taskModel_day_list, day),

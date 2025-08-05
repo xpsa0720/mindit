@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mindit/common/component/logo_component.dart';
 
 import '../data/color.dart';
@@ -32,14 +31,11 @@ class DefaultLayout extends StatelessWidget {
     else {
       return AppBar(
         title: LogoComponent(size: 30),
-        actions: [
-          Icon(Icons.alarm_rounded, size: 30, color: Colors.black),
-          SizedBox(width: 18),
-        ],
+        actions: [SizedBox(width: 18)],
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(40),
 
-          child: Column(children: [tabBar, Shadow()]),
+          child: Column(children: [tabBar]),
         ),
         backgroundColor: Colors.white,
 

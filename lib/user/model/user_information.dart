@@ -1,18 +1,14 @@
-import 'package:json_annotation/json_annotation.dart';
 import 'package:mindit/sqlite/model/base_model.dart';
-import 'package:mindit/task/model/task_model.dart';
 import 'package:mindit/task/model/task_state_model.dart';
 
 class UserInformation extends ModelBase {
   final String name;
   final int sequenceDay;
   final List<DateTime> allClearDays;
-  TaskStateModel tasks;
 
   UserInformation({
     required this.name,
     required this.sequenceDay,
-    required this.tasks,
     List<DateTime>? allClearDays,
   }) : allClearDays = allClearDays ?? [];
 
@@ -24,12 +20,12 @@ class UserInformation extends ModelBase {
           (json['allClearDays'] as List<dynamic>?)
               ?.map((e) => DateTime.parse(e as String))
               .toList(),
-      tasks: TaskStateModel(
-        TaskModels:
-            (json['tasks'] as List<dynamic>?)
-                ?.map((e) => TaskModel.fromMap(e as Map<String, dynamic>))
-                .toList(),
-      ),
+      // tasks: TaskStateModel(
+      //   TaskModels:
+      //       (json['tasks'] as List<dynamic>?)
+      //           ?.map((e) => TaskModel.fromMap(e as Map<String, dynamic>))
+      //           .toList(),
+      // ),
     );
   }
 
@@ -49,7 +45,7 @@ class UserInformation extends ModelBase {
       allClearDays: allClearDays ?? this.allClearDays,
       sequenceDay: sequenceDay ?? this.sequenceDay,
       name: name ?? this.name,
-      tasks: tasks ?? this.tasks,
+      // tasks: tasks ?? this.tasks,
     );
   }
 }

@@ -6,11 +6,13 @@ class BoxComponent extends StatelessWidget {
   final double? height;
   final BoxDecoration? boxDecoration;
   final EdgeInsets? padding;
+  final EdgeInsets? boaderPadding;
   final bool shadow;
   const BoxComponent({
     super.key,
     required this.child,
     this.width,
+    this.boaderPadding,
     this.height,
     this.boxDecoration,
     this.padding,
@@ -20,7 +22,7 @@ class BoxComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(10),
+      padding: boaderPadding == null ? EdgeInsets.all(8.0) : boaderPadding!,
       child: Container(
         width: width,
         height: height,
@@ -33,11 +35,14 @@ class BoxComponent extends StatelessWidget {
                 ? BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.black87, width: 2),
+                  border: Border.all(
+                    color: Colors.black.withAlpha(95),
+                    width: 1,
+                  ),
                   boxShadow: [
                     if (shadow)
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.3),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 1,
                         offset: Offset(2, 4),
                       ),
@@ -46,7 +51,7 @@ class BoxComponent extends StatelessWidget {
                 : boxDecoration!.copyWith(
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.3),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 1,
                       offset: Offset(2, 4),
                     ),

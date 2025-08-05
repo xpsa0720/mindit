@@ -2,14 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindit/common/component/logo_component.dart';
-import 'package:mindit/common/view/root_tab.dart';
-import 'package:mindit/user/model/user_information.dart';
+import 'package:mindit/task/provider/task_model_provider.dart';
 import 'package:mindit/user/provider/setting_provider.dart';
 import 'package:mindit/user/provider/user_information_provider.dart';
 import 'package:mindit/user/view/dash_board_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:async';
-import 'package:shared_preferences_android/shared_preferences_android.dart';
 import '../../sqlite/provider/db_provider.dart';
 import '../../user/provider/prefs_provider.dart';
 import '../../user/provider/screen_on_service_provider.dart';
@@ -43,6 +39,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     await ref.read(UserInformationStateNotifierProvider.notifier).InitInfo();
     await ref.read(setting_provider.notifier).InitSetting();
     await ref.read(screenServiceProvider).requestPermission();
+    // await ref.read(toDayFileStateNotifierProvider.notifier).Init();
+    await ref
+        .read(TaskModelPaginationStateNotifierProvider.notifier)
+        .allPagination();
+
     setState(() {
       InitUserLoading = true;
     });

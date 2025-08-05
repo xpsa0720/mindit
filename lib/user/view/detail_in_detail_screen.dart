@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:mindit/common/provider/tabcontroller_provider.dart';
 import 'package:mindit/user/view/detail_screen.dart';
 
 import '../../common/data/color.dart';
@@ -26,14 +24,7 @@ class _DetailInDetailScreenState extends ConsumerState<DetailInDetailScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: BACKGROUND_COLOR,
-      body: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, result) {
-          context.go(DetailScreen.routeFullPath);
-          ref.read(TabControllerProvider.notifier).AnimationTo(index: 1);
-        },
-        child: SafeArea(child: Container(color: BACKGROUND_COLOR)),
-      ),
+      body: SafeArea(child: Container(color: BACKGROUND_COLOR)),
     );
   }
 }

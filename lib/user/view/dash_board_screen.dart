@@ -4,19 +4,17 @@ import 'package:mindit/common/component/box_component.dart';
 import 'package:mindit/common/component/dash_board_box_component.dart';
 import 'package:mindit/common/component/end_card_component.dart';
 import 'package:mindit/common/component/render_loading_component.dart';
-import 'package:mindit/common/component/text_component.dart';
-import 'package:mindit/sqlite/model/base_model.dart';
-import 'package:mindit/task/model/task_checkbox_model.dart';
 import 'package:mindit/task/provider/task_model_provider.dart';
+import 'package:mindit/user/foreground/util.dart';
 import 'package:mindit/user/model/user_information.dart';
+import 'package:mindit/user/provider/foreground_provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../common/component/button_component.dart';
 import '../../common/component/calendar_component.dart';
-import '../../common/component/check_dialog_component.dart';
 import '../../common/component/dialog_component.dart';
 import '../../common/component/list_component.dart';
-import '../../common/component/text_filed_component.dart';
 import '../../common/model/pagination_model.dart';
+import '../../task/provider/task_check_box_model_provider.dart';
 import '../provider/user_information_provider.dart';
 
 class DashBoardScreen extends ConsumerStatefulWidget {
@@ -32,10 +30,10 @@ class DashBoardScreen extends ConsumerStatefulWidget {
 class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
-  // final List<AnimationController> checkController_list = [];
-  // final List<Animation<double>> animation_list = [];
   bool requestName = false;
   late ScrollController scrollController;
+  bool DataLoading = false;
+
   ControllerListener() async {
     if (scrollController.offset >
         scrollController.position.maxScrollExtent - 60) {
@@ -48,7 +46,6 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
   UserInfoCheck() async {
     final user = ref.read(UserInformationStateNotifierProvider);
     if (user is UserInformation) {
-      print(user.name);
       if (user.name == "") {
         requestName = true;
       }
@@ -77,8 +74,8 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
     super.build(context);
     final state = ref.watch(TaskModelPaginationStateNotifierProvider);
     final cp = ref.watch(TaskModelStateNotifierProvider);
-    final List<TaskCheckBoxModel> taskCheckBoxModelList = [];
-
+    final cp_notifier = ref.watch(TaskModelStateNotifierProvider.notifier);
+    final stateTask = ref.watch(ForegroundServiceProvider);
     if (requestName) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final TextEditingController textEditingController =
@@ -124,30 +121,15 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
         ),
       );
     }
-
-    List.generate(cp.TaskModels.length - taskCheckBoxModelList.length, (index) {
-      // final standardIndex = checkController_list.length;
-      final checkController = AnimationController(
-        vsync: this,
-        duration: const Duration(milliseconds: 300),
-      );
-      taskCheckBoxModelList.add(
-        TaskCheckBoxModel(
-          model: cp.TaskModels[index],
-          checkController: checkController,
-          animation: Tween<double>(begin: 0, end: 1).animate(
-            CurvedAnimation(
-              parent: checkController,
-              curve: Curves.easeInOutCirc,
-            ),
-          ),
-        ),
-      );
-    });
+    final data = cp_notifier.toDayTasks();
+    final taskCheckBoxState = ref.watch(taskCheckBoxModelProvider(this));
 
     return ListView(
       children: [
-        BoxComponent(child: SizedBox(child: CalendarComponent())),
+        BoxComponent(
+          boaderPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 18),
+          child: SizedBox(child: CalendarComponent()),
+        ),
         Container(
           height: 60,
           width: double.infinity,
@@ -157,18 +139,17 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
         Row(
           children: [
             Expanded(flex: 5, child: DashBoardBoxComponent()),
-
             Expanded(
               flex: 7,
-
               child: BoxComponent(
+                boaderPadding: EdgeInsets.only(right: 16, left: 5, top: 10),
                 height: 300,
                 child: Column(
                   children: [
                     Text(
                       '오늘 할일은...',
                       style: TextStyle(
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w500,
                         fontSize: 25,
                       ),
                       textAlign: TextAlign.left,
@@ -178,34 +159,41 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen>
                       child: ListView.separated(
                         controller: scrollController,
                         itemCount:
-                            state is PaginationMore && cp.TaskModels.isEmpty
+                            state is PaginationMore && data.isEmpty
                                 ? 5
-                                : cp.TaskModels.length + 1,
+                                : data.length + 1,
                         itemBuilder: (context, index) {
-                          if (state is PaginationMore &&
-                              cp.TaskModels.isEmpty) {
+                          if ((state is PaginationMore && data.isEmpty) ||
+                              stateTask is! ForegroundService) {
                             return Skeletonizer(
                               enabled: state is PaginationMore,
                               child: ListComponent(),
                             );
                           }
-                          if (cp.TaskModels.isEmpty) return EndCardComponent();
+                          final stateTask_cp = stateTask as ForegroundService;
+                          if (data.isEmpty) return EndCardComponent();
                           // return TextComponent(text: '할일이?');
 
-                          if (index == cp.TaskModels.length)
+                          if (index == data.length)
                             return cp.isEnd
                                 ? Text('')
                                 : RenderLoadingComponent();
 
+                          // print(taskCheckBoxModelList[1].model.title);
                           return ListComponent(
-                            model: taskCheckBoxModelList[index].model,
-                            animation: taskCheckBoxModelList[index].animation,
+                            check:
+                                stateTask_cp.stateTask[taskCheckBoxState[index]
+                                    .model
+                                    .id
+                                    .toString()],
+                            model: taskCheckBoxState[index].model,
+                            animation: taskCheckBoxState[index].animation,
                             checkController:
-                                taskCheckBoxModelList[index].checkController,
+                                taskCheckBoxState[index].checkController,
                           );
                         },
                         separatorBuilder: (context, index) {
-                          return SizedBox(height: 8);
+                          return SizedBox(height: 0);
                         },
                       ),
                     ),

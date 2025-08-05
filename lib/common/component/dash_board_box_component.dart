@@ -21,10 +21,11 @@ class _DashBoardBoxComponentState extends ConsumerState<DashBoardBoxComponent> {
       return Center(child: CircularProgressIndicator(color: Colors.black));
     }
     return BoxComponent(
+      boaderPadding: EdgeInsets.only(left: 16, right: 5, top: 10),
       height: 300,
       child: Text(
         '연속 ${state.sequenceDay}일 퍼펙트!!',
-        style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700),
+        style: TextStyle(fontSize: 30, fontWeight: FontWeight.w400),
       ),
     );
   }

@@ -6,13 +6,18 @@ class LogoComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      'Mindit',
-      style: TextStyle(
-        fontFamily: 'Manjari',
-        fontWeight: FontWeight.w500,
-        fontSize: size,
-      ),
+    return Column(
+      children: [
+        SizedBox(height: 20),
+        Text(
+          'Mindit',
+          style: TextStyle(
+            fontFamily: 'Manjari',
+            fontWeight: FontWeight.w500,
+            fontSize: size,
+          ),
+        ),
+      ],
     );
   }
 }

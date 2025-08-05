@@ -10,8 +10,6 @@ final TabControllerProvider =
     });
 
 class TabControllerStateNotifier extends StateNotifier<ModelBase> {
-  // final int length;
-  // final TickerProvider vsync;
   TabControllerStateNotifier() : super(ModelLoading());
 
   InitTabController({required int length, required TickerProvider vsync}) {

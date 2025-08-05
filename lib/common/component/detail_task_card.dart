@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:mindit/common/component/calendar_component.dart';
 import 'package:mindit/common/component/one_task_calendar_component.dart';
 import 'package:mindit/common/component/text_component.dart';
-import 'package:mindit/common/data/color.dart';
 import 'package:mindit/task/model/task_model.dart';
-import 'package:mindit/user/view/detail_in_detail_screen.dart';
-
+import 'package:mindit/user/provider/foreground_provider.dart';
 import '../../task/provider/task_model_provider.dart';
 import '../util/data_util.dart';
 import 'Box_component.dart';
@@ -23,7 +19,8 @@ class DetailTaskCard extends ConsumerStatefulWidget {
   ConsumerState<DetailTaskCard> createState() => _DetailTaskCardState();
 }
 
-class _DetailTaskCardState extends ConsumerState<DetailTaskCard> {
+class _DetailTaskCardState extends ConsumerState<DetailTaskCard>
+    with TickerProviderStateMixin {
   bool detailMode = false;
 
   @override
@@ -32,18 +29,21 @@ class _DetailTaskCardState extends ConsumerState<DetailTaskCard> {
   }
 
   mainBox() {
+    print(widget.DBdata.clearDay);
     bool perfect = false;
-
-    int notWorkingDayCount =
+    int clearDaysCount = widget.DBdata.clearDay.length;
+    int everyBetweenDays =
         DataUtils.getSpecificWeekdayBetween(
           start: widget.DBdata.createTime,
           end: DateTime.now().subtract(Duration(days: 1)),
+
           weekdays: DataUtils.weekDayToInt(
             WeekDayModel: widget.DBdata.dayOfWeekModel,
           ),
-        ).length -
-        widget.DBdata.clearDay.length;
-    print(int.parse(widget.DBdata.mainColor).toRadixString(16));
+        ).length;
+    int notWorkingDayCount = everyBetweenDays - clearDaysCount;
+    double implementationRate =
+        clearDaysCount == 0 ? 0.0 : everyBetweenDays / clearDaysCount;
 
     if (notWorkingDayCount == 0) {
       perfect = true;
@@ -51,20 +51,21 @@ class _DetailTaskCardState extends ConsumerState<DetailTaskCard> {
 
     final inDays = DateTime.now().difference(widget.DBdata.createTime).inDays;
     return BoxComponent(
-      // height: 125,
+      boaderPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+      shadow: false,
       boxDecoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.white, Color(int.parse(widget.DBdata.mainColor))],
           stops: [
-            0.9 - (widget.DBdata.implementationRate / 100),
-            1 + (widget.DBdata.implementationRate / 100),
+            0.9 - (implementationRate / 100),
+            1 + (implementationRate / 100),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.black87, width: 2),
+        border: Border.all(color: Colors.black87.withAlpha(95), width: 1),
       ),
       child: Theme(
         data: Theme.of(context).copyWith(
@@ -97,8 +98,13 @@ class _DetailTaskCardState extends ConsumerState<DetailTaskCard> {
               ),
               body(
                 day: widget.DBdata.sequenceDay,
-                percent: widget.DBdata.implementationRate,
+                percent: implementationRate,
                 perfect: perfect,
+                weekofDay: DataUtils.PapagoEnglishtoKorea(
+                  DataUtils.dayOfWeekToJsonData(
+                    widget.DBdata.dayOfWeekModel,
+                  ).split(';'),
+                ),
               ),
             ],
           ),
@@ -169,6 +175,8 @@ class _DetailTaskCardState extends ConsumerState<DetailTaskCard> {
   }
 
   DeleteModel() {
+    final task_provider = ref.read(TaskModelStateNotifierProvider.notifier);
+    final ForegroundNotifier = ref.read(ForegroundServiceProvider.notifier);
     CheckDialogComponent(
       title: '정말로 삭제할까요?',
       message: "되돌릴수 없습니다!",
@@ -176,10 +184,11 @@ class _DetailTaskCardState extends ConsumerState<DetailTaskCard> {
       No_function: () {
         Navigator.pop(context);
       },
-      OK_function: () {
-        final task_provider = ref.read(TaskModelStateNotifierProvider.notifier);
-        task_provider.deleteModel(widget.DBdata);
+      OK_function: () async {
         Navigator.pop(context);
+
+        await task_provider.deleteModel(widget.DBdata);
+        await ForegroundNotifier.deleteTask(widget.DBdata);
       },
     );
   }
@@ -191,81 +200,80 @@ class _DetailTaskCardState extends ConsumerState<DetailTaskCard> {
           // height: 50,
           child: Text(
             text,
-            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 30),
-          ),
-        ),
-        SizedBox(width: 10),
-        SizedBox(
-          height: 20,
-          width: 150,
-          child: ListView(
-            key: PageStorageKey(
-              widget.DBdata.title + widget.DBdata.id.toString(),
-            ),
-            scrollDirection: Axis.horizontal,
-            children:
-                weekofDay
-                    .map(
-                      (e) => Text(
-                        e,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    )
-                    .toList(),
+            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 30),
           ),
         ),
       ],
     );
   }
 
-  body({required int day, required bool perfect, required double percent}) {
-    return Row(
+  body({
+    required int day,
+    required bool perfect,
+    required double percent,
+    required List<String> weekofDay,
+  }) {
+    return Column(
       children: [
-        SizedBox(
-          height: 50,
-          width: 300,
-          child: ListView(
-            key: PageStorageKey('body'),
-            scrollDirection: Axis.horizontal,
-            children: [
-              Text(
-                '연속 ',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 21,
-                  color: Colors.black,
-                ),
+        Row(
+          children: [
+            SizedBox(
+              height: 36,
+              width: 300,
+              child: ListView(
+                key: PageStorageKey('body'),
+                scrollDirection: Axis.horizontal,
+                children: [
+                  Text(
+                    '연속 ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 21,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    day.toString(),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 21,
+                      color: perfect ? Colors.green : Colors.black,
+                    ),
+                  ),
+                  Text(
+                    '일 달성 - 실천율: ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 21,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    percent.toString() + "%",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 21,
+                      color: perfect ? Colors.green : Colors.black,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                day.toString(),
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 21,
-                  color: perfect ? Colors.green : Colors.black,
-                ),
-              ),
-              Text(
-                '일 달성 - 실천율: ',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 21,
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                percent.toString() + "%",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 21,
-                  color: perfect ? Colors.green : Colors.black,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
+        ),
+        Row(
+          children:
+              weekofDay
+                  .map(
+                    (e) => Text(
+                      e,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                      ),
+                    ),
+                  )
+                  .toList(),
         ),
       ],
     );

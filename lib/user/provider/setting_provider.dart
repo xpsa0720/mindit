@@ -32,7 +32,7 @@ class SettingStateNotifier extends StateNotifier<ModelBase> {
           await SaveSetting();
           return;
         }
-        final model = SettingModel.CustomfromJson(jsonDecode(json!));
+        final model = SettingModel.CustomfromJson(jsonDecode(json));
         state = model;
         print(model.allowScreenOnScreen);
       } else {
@@ -61,5 +61,10 @@ class SettingStateNotifier extends StateNotifier<ModelBase> {
       print(s);
       state = ModelError(message: 'SaveSetting 에러 남');
     }
+  }
+
+  ChangeLockScreen(bool setting) async {
+    state = SettingModel(allowScreenOnScreen: setting);
+    await SaveSetting();
   }
 }

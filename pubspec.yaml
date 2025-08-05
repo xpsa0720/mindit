@@ -35,8 +35,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   table_calendar: ^3.2.0
-  dio: ^5.8.0+1
-  flutter_secure_storage: ^9.2.4
   json_annotation: ^4.9.0
   retrofit: ^4.4.0
   logger: ^2.4.0  # for logging purpose
@@ -50,8 +48,10 @@ dependencies:
   animated_check: ^1.0.5
   shared_preferences: ^2.5.3
   path_provider: ^2.1.5
+  screen_state: ^4.1.1
   screen_on_flutter:
     path: ../screen_on_flutter
+  android_alarm_manager_plus: ^4.0.7
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +78,13 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - asset/image/background.png
+    - asset/image/pen_checkbox.png
+    - asset/image/pen_checkbox2.png
+    - asset/image/check.png
+
   fonts:
     - family: NotoSans
       fonts:
@@ -92,6 +99,14 @@ flutter:
         - asset: asset/fonts/NotoSansKR-Light.ttf
           weight: 300
         - asset: asset/fonts/NotoSansKR-Thin.ttf
+          weight: 100
+    - family: Dovemayo
+      fonts:
+        - asset: asset/fonts/Dovemayo_gothic.ttf
+
+    - family: PenCel
+      fonts:
+        - asset: asset/fonts/온글잎 류류체.ttf
           weight: 100
 
     - family: Manjari

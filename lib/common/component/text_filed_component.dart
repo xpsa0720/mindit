@@ -10,7 +10,7 @@ class TextFiledComponent extends StatelessWidget {
   });
   final defaultBoarder = OutlineInputBorder(
     borderRadius: BorderRadius.circular(10),
-    borderSide: BorderSide(color: Colors.black),
+    borderSide: BorderSide(color: Colors.black.withAlpha(98)),
   );
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class TextFiledComponent extends StatelessWidget {
       decoration: InputDecoration(
         contentPadding: EdgeInsets.all(8),
         filled: true,
-        fillColor: Color(0xFFEEEEEE),
+        fillColor: Colors.white60,
         disabledBorder: defaultBoarder,
         enabledBorder: defaultBoarder,
         focusedBorder: defaultBoarder.copyWith(
@@ -29,7 +29,7 @@ class TextFiledComponent extends StatelessWidget {
         enabled: true,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.black),
+          borderSide: BorderSide(color: Colors.black.withAlpha(90)),
         ),
       ),
       cursorColor: Colors.transparent,

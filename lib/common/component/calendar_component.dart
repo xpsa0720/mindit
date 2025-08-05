@@ -53,7 +53,7 @@ class _CalendarComponentState extends ConsumerState<CalendarComponent> {
               child: Center(
                 child: Text(
                   '${day.day}',
-                  style: TextStyle(color: Colors.white, fontSize: 17),
+                  style: TextStyle(color: Colors.black87, fontSize: 17),
                 ),
               ),
             ),

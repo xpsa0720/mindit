@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
 import 'package:intl/intl.dart';
 import 'package:mindit/common/data/data.dart';
 import 'package:mindit/task/model/day_of_week_model.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class DataUtils {
@@ -148,13 +150,15 @@ class DataUtils {
     return model;
   }
 
-  static Future<File> getTodayTempFile(Directory path) async {
+  static Future<File> getTodayTempFile() async {
     final now = DateTime.now();
+    final path = await getTemporaryDirectory();
     final file = File(
       '${path.path}/${DateFormat('yyyy-MM-dd').format(now)}.json',
     );
     if (!(await file.exists())) {
       await file.create();
+      await file.writeAsString(jsonEncode({}));
     }
     return file;
   }

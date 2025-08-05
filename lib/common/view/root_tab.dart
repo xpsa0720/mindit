@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindit/common/layout/default_layout.dart';
 import 'package:mindit/common/provider/tabcontroller_provider.dart';
 import 'package:mindit/sqlite/model/base_model.dart';
-import 'package:mindit/user/view/error_screen.dart';
 
 import '../../user/router/router.dart';
 import '../../user/view/dash_board_screen.dart';
@@ -29,10 +29,7 @@ class _RootTabState extends ConsumerState<RootTab>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    print("initState 됨");
-    // tabBarController = TabController(length: 4, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (ref.read(TabControllerProvider) is! CustomTabController) {
         ref
@@ -44,17 +41,7 @@ class _RootTabState extends ConsumerState<RootTab>
 
   @override
   void dispose() {
-    print("dispose됨");
     super.dispose();
-  }
-
-  int getIndex(BuildContext context) {
-    final currentPath = GoRouterState.of(context).uri.toString();
-    if (currentPath == DashBoardScreen.routePath) return 0;
-    if (currentPath == DetailScreen.routePath) return 1;
-    if (currentPath == DataPlusScreen.routePath) return 2;
-    if (currentPath == SettingScreen.routePath) return 3;
-    return 0;
   }
 
   @override
@@ -68,7 +55,6 @@ class _RootTabState extends ConsumerState<RootTab>
       tabBar: TabBar(
         controller: controller,
         onTap: (index) {
-          print(locationPath[index]);
           context.go(locationPath[index]);
           ref.read(TabControllerProvider.notifier).AnimationTo(index: index);
         },
@@ -92,7 +78,6 @@ class _RootTabState extends ConsumerState<RootTab>
         }),
         dividerColor: Colors.transparent,
         labelColor: Colors.black,
-        // 선택된 탭의 텍스트 색상
         indicatorColor: Colors.black,
         indicatorWeight: 1,
         isScrollable: false,

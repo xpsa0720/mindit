@@ -1,6 +1,7 @@
 import 'dart:ui';
 
-final BACKGROUND_COLOR = Color(0xFFEBEBEB);
+final BACKGROUND_COLOR = Color(0xFFF5F5F5);
+
 final CLEAR_COLOR = Color(0xFFb3f3a4);
 
 const int pastelRedHex = 0xFFFFB3BA;

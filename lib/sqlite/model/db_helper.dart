@@ -60,7 +60,6 @@ class DbHelper extends ModelBase {
     start_id += count;
     end_id += count;
     for (final i in result) {
-      print(i['id'].runtimeType);
       return_result.add(TaskModel.fromMap(i));
     }
 
@@ -140,9 +139,20 @@ class DbHelper extends ModelBase {
     required String table,
     required String time,
   }) async {
+    final result = await db.query(
+      table,
+      columns: ['clearDay'],
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+
+    String current =
+        result.isNotEmpty ? result.first['clearDay'] as String? ?? '' : '';
+
+    String updated = current.isEmpty ? time : '$current;$time';
     await db.update(
       table,
-      {'clearDay': time},
+      {'clearDay': updated},
       where: 'id = ?',
       whereArgs: [id],
     );
