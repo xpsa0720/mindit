@@ -1,0 +1,38 @@
+import 'package:flutter/material.dart';
+
+class TextFiledComponent extends StatelessWidget {
+  final TextEditingController textEditingController;
+  final double? width;
+  TextFiledComponent({
+    super.key,
+    required this.textEditingController,
+    this.width,
+  });
+  final defaultBoarder = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(10),
+    borderSide: BorderSide(color: Colors.black.withAlpha(98)),
+  );
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: textEditingController,
+      style: TextStyle(fontSize: 20),
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.all(8),
+        filled: true,
+        fillColor: Colors.white60,
+        disabledBorder: defaultBoarder,
+        enabledBorder: defaultBoarder,
+        focusedBorder: defaultBoarder.copyWith(
+          borderSide: BorderSide(color: Colors.green),
+        ),
+        enabled: true,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: Colors.black.withAlpha(90)),
+        ),
+      ),
+      cursorColor: Colors.transparent,
+    );
+  }
+}
