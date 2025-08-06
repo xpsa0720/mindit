@@ -48,8 +48,7 @@ dependencies:
   animated_check: ^1.0.5
   shared_preferences: ^2.5.3
   path_provider: ^2.1.5
-  screen_on_flutter:
-    path: ../screen_on_flutter
+  screen_on_flutter: ^0.0.1
   android_alarm_manager_plus: ^4.0.7
 
 dev_dependencies:
